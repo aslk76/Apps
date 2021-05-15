@@ -77,9 +77,8 @@ async def on_ready():
             bot_log_channel = get(guild.text_channels, id=817552283209433098)
             embed_bot_log = discord.Embed(title="Info Log.",
                                 description=f'{bot.user.name} {discord.__version__} has connected to Discord!',
-                                color=0x5d4991,
-                                timestamp=datetime.now(timezone.utc))
-            #embed_bot_log.set_footer(text=datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None))
+                                color=0x5d4991)
+            embed_bot_log.set_footer(text=datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None))
             await bot_log_channel.send(embed=embed_bot_log)
             running=True
     except Exception:
@@ -88,8 +87,8 @@ async def on_ready():
         embed_bot_log = discord.Embed(
                                     title="Error Log.",
                                     description="on ready",
-                                    color=0x5d4991,
-                                    timestamp=datetime.now(timezone.utc))
+                                    color=0x5d4991)
+        embed_bot_log.set_footer(text=datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None))
         await bot_log_channel.send(embed=embed_bot_log)
 
 
