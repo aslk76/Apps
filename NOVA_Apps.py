@@ -921,7 +921,6 @@ async def NameChange(ctx, *, rio_url):
         return
 
     try:
-        end_date = datetime.now(timezone.utc).date()
         async with ctx.bot.pool.acquire() as conn:
             async with conn.cursor() as cursor:
                 query  = """
@@ -935,18 +934,18 @@ async def NameChange(ctx, *, rio_url):
                     end_date = date_of_change + timedelta(days=30)
                 else:
                     date_of_change = None
+                    end_date = None
 
-            if date_of_change is None:
-                confirmation_msg = await ctx.send("""
-                                **Attention!**\n
-                                When changing your name, beware that any pending balance you have will be sent 
-                                to your previous character name. If you no longer have that character, 
-                                make a level 1 with the same name so that it can receive the gold.
-                                NOVA is not responsible if you make an error in changing your name, 
-                                we will send the gold to the associated character names given, 
-                                if you fail to receive it, that is on you. \n
-                                By typing "Yes", you accept these terms. You have 30 seconds to reply here.
-                        """)
+            if ((date_of_change is None and end_date is None) or 
+                (end_date is not None and datetime.now(timezone.utc).date() > end_date)):
+                confirmation_msg = await ctx.send("**Attention!**\n"
+                                "When changing your name, beware that any pending balance you have will be sent "
+                                "to your previous character name. If you no longer have that character, "
+                                "make a level 1 with the same name so that it can receive the gold.\n"
+                                "**NOVA** __is not responsible__ if you make an error in changing your name, " 
+                                "we will send the gold to the associated character names given, "
+                                "if you fail to receive it, that is on you.\n"
+                                "`By typing 'Yes', you accept these terms. You have 30 seconds to reply here.`")
 
                 def check(m):
                     return m.content.lower() == "yes" and m.channel == ctx.channel and m.author == ctx.author
@@ -955,7 +954,7 @@ async def NameChange(ctx, *, rio_url):
                     msg = await bot.wait_for("message", timeout=30.0, check=check)
                 except asyncio.TimeoutError:
                     await ctx.send("User didn't confirm within 30 seconds, cancelling name change", 
-                                    delete_after=10)
+                                    delete_after=5)
                     await confirmation_msg.delete()
                 else:
                     await confirmation_msg.delete()
@@ -1020,6 +1019,7 @@ async def NameChange(ctx, *, rio_url):
                             else:
                                 realm_final = realm_pre
                             
+                            await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
                             async with conn.cursor() as cursor:
                                 query = """
                                         INSERT INTO name_changes 
@@ -1030,108 +1030,12 @@ async def NameChange(ctx, *, rio_url):
                                     ctx.author.id, ctx.author.display_name, f"{char}-{realm_final} [{faction_short}]", 
                                     {datetime.now(timezone.utc).date()})
                                 await cursor.execute(query, val)
-                                await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
-            elif datetime.now(timezone.utc).date() > end_date:
-                confirmation_msg = await ctx.send("""
-                                **Attention!**\n
-                                When changing your name, beware that any pending balance you have will be sent 
-                                to your previous character name. If you no longer have that character, 
-                                make a level 1 with the same name so that it can receive the gold.
-                                NOVA is not responsible if you make an error in changing your name, 
-                                we will send the gold to the associated character names given, 
-                                if you fail to receive it, that is on you. \n
-                                By typing "Yes", you accept these terms. You have 30 seconds to reply here.
-                        """)
-
-                def check(m):
-                    return m.content.lower() == "yes" and m.channel == ctx.channel and m.author == ctx.author
-
-                try:
-                    msg = await bot.wait_for("message", timeout=30.0, check=check)
-                except asyncio.TimeoutError:
-                    await ctx.send("User didn't confirm within 30 seconds, cancelling name change", 
-                                    delete_after=10)
-                    await confirmation_msg.delete()
-                else:
-                    await confirmation_msg.delete()
-                    rio_api = (
-                        f"{rio_conf.base}/api/v1/characters/profile?region=eu"
-                        f"&realm={realm}"
-                        f"&name={char}&fields=mythic_plus_scores_by_season:current"
-                    )
-                    response = requests.get(rio_api)
-                    if response.status_code == 200:
-                        json_str = json.dumps(response.json())
-                        resp = json.loads(json_str)
-                        faction = resp["faction"]
-                        score = resp["mythic_plus_scores_by_season"][0]["scores"]["all"]
-                        if score < rio_conf.role_threshhold:
-                            await ctx.send("The character your are renaming to has less than the required score",
-                                            delete_after = 10)
-                            return
-                        else:
-                            faction_short = "H" if faction == "horde" else "A"
-                            realm_pre = realm.replace(' ', '').replace('-','').capitalize()
-                            if realm_pre.startswith("Pozzo"):
-                                realm_final = "Pozzo"
-                            elif realm_pre == "Dunmodr":
-                                realm_final = "DunModr"
-                            elif realm_pre.startswith("Twisting"):
-                                realm_final = "TwistingNether"
-                            elif realm_pre.startswith("Tarren"):
-                                realm_final = "TarrenMill"
-                            elif realm_pre == "Colinaspardas":
-                                realm_final = "ColinasPardas"
-                            elif realm_pre == "Burninglegion":
-                                realm_final = "BurningLegion"
-                            elif realm_pre == "Themaelstrom":
-                                realm_final = "TheMaelstrom"
-                            elif realm_pre == "Defiasbrotherhood":
-                                realm_final = "Defias"
-                            elif realm_pre == "Shatteredhand":
-                                realm_final = "Shattered"
-                            elif realm_pre.startswith("Argent"):
-                                realm_final = "ArgentDawn"
-                            elif realm_pre == "Burningblade":
-                                realm_final = "BurningBlade"
-                            elif realm_pre.startswith("Aggra"):
-                                realm_final = "Aggra"
-                            elif realm_pre.startswith("Chamberof"):
-                                realm_final = "ChamberofAspects"
-                            elif realm_pre.startswith("Emerald"):
-                                realm_final = "EmeraldDream"
-                            elif realm_pre.startswith("Grim"):
-                                realm_final = "GrimBatol"
-                            elif realm_pre.startswith("Quel"):
-                                realm_final = "Quel'Thalas"
-                            elif realm_pre.startswith("Mal'ganis"):
-                                realm_final = "Mal'Ganis"
-                            elif realm_pre.startswith("Azjol"):
-                                realm_final = "AzjolNerub"
-                            elif realm_pre.startswith("Los"):
-                                realm_final = "LosErrantes"
-                            elif realm_pre.startswith("Twilight"):
-                                realm_final = "Twilight'sHammer"
-                            else:
-                                realm_final = realm_pre
-                            
-                            async with conn.cursor() as cursor:
-                                query = """
-                                        INSERT INTO name_changes 
-                                            (discord_id, old_name, new_name, date_of_change) 
-                                            VALUES (%s, %s, %s, %s)
-                                    """
-                                val = (
-                                    ctx.author.id, ctx.author.display_name, f"{char}-{realm_final} [{faction_short}]", 
-                                    {datetime.now(timezone.utc).date()})
-                                await cursor.execute(query, val)
-                                await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
-            elif datetime.now(timezone.utc).date() < end_date:
-                await ctx.channel.send(f"You have changed your name in the last 30 days, you cannot change "
+            elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
+                await ctx.send(f"You have changed your name in the last 30 days, you cannot change "
                                     f"again until {end_date}", 
                                     delete_after=10)
     except discord.errors.Forbidden:
-        await ctx.channel.send(f"Cannot send a DM to {ctx.author.mention}", delete_after=10)
+        await ctx.send(f"Cannot send a DM to {ctx.author.mention}", delete_after=10)
     except Exception:
         logger.error("--On NameChange Command---")
         logger.error(traceback.format_exc())
