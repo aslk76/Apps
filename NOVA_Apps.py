@@ -1,48 +1,95 @@
 #!/usr/bin/env python3
 # coding=utf-8
-import os, random, time, traceback, logging, \
-    discord, asyncio, collections, \
-    requests, json
-from datetime import datetime
-from datetime import timedelta
-from discord.ext import commands, tasks
+import os
+import traceback
+import logging
+import discord
+import asyncio
+import requests
+import json
+import socket
+from datetime import datetime, timezone
+from discord.ext import commands
 from discord.utils import get
-from itertools import cycle 
 from dotenv import load_dotenv
+import aiomysql
+import aiohttp
+
 
 running=False
 
-status= cycle(['Welcome to','NOVA Community'])
-
-
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
+DB_HOST = os.getenv('DB_HOST')
+DB_PORT = os.getenv('DB_PORT')
+DB_USER = os.getenv('DB_USER')
+DB_PASSWORD = os.getenv('DB_PASSWORD')
+DB_DATABASE = os.getenv('DB_DATABASE')
 
 intents = discord.Intents().all()
-bot = commands.Bot(command_prefix=commands.when_mentioned_or('apps!'), case_insensitive=True, intents=intents)
 
-logging.basicConfig(filename='/NOVA/NOVA_Apps/NOVA_Apps.log', level=logging.ERROR, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#logging.basicConfig(filename='NOVAApps.log', level=logging.ERROR, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+class Mybot(commands.Bot):
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    
+    self.pool = None
+    self._resolver = aiohttp.AsyncResolver()
+
+    # Use AF_INET as its socket family to prevent HTTPS related problems both locally
+    # and in production.
+    self._connector = aiohttp.TCPConnector(
+        resolver=self._resolver,
+        family=socket.AF_INET,
+    )
+
+    self.http.connector = self._connector
+    self.http_session = aiohttp.ClientSession(connector=self._connector)
+    
+    
+
+  async def logout(self):
+      """|coro|
+      Logs out of Discord and closes all connections.
+      """
+      try:
+        if self.pool:
+          self.pool.close()
+          await self.pool.wait_closed()
+      finally:
+          await super().logout()
+
+bot = Mybot(command_prefix=commands.when_mentioned_or('apps!'), case_insensitive=True, intents=intents)
+
+logger = logging.getLogger('discord')
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler(filename='/NOVA/NOVA_Apps/NOVA_Apps.log', encoding='utf-8', mode='a')
+handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s'))
+logger.addHandler(handler)
+
 
 @bot.event
 async def on_ready():
     global running
     try:
         if running==False:
-            await asyncio.sleep (3)
+            logger.info(f'{bot.user.name} {discord.__version__} has connected to Discord!')
             guild = bot.get_guild(815104630433775616)
             bot_log_channel = get(guild.text_channels, id=817552283209433098)
-            embed_bot_log = discord.Embed(title="Info Log.", description=f'{bot.user.name} {discord.__version__} has connected to Discord!',
-                                          color=0x5d4991)
-            embed_bot_log.set_footer(text=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+            embed_bot_log = discord.Embed(title="Info Log.",
+                                description=f'{bot.user.name} {discord.__version__} has connected to Discord!',
+                                color=0x5d4991,
+                                timestamp=datetime.now(timezone.utc))
+            #embed_bot_log.set_footer(text=datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None))
             await bot_log_channel.send(embed=embed_bot_log)
             running=True
     except Exception:
-        logging.error(traceback.format_exc())
+        logger.error(traceback.format_exc())
         bot_log_channel = get(guild.text_channels, name='bot-logs')
-        embed_bot_log = discord.Embed(title="Error Log.", description=traceback.format_exc(), color=0x5d4991)
-        embed_bot_log.add_field(name="Source", value="on ready", inline=True)
-        embed_bot_log.set_footer(text=datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
+        embed_bot_log = discord.Embed(
+                                    title="Error Log.",
+                                    description="on ready",
+                                    color=0x5d4991,
+                                    timestamp=datetime.now(timezone.utc))
         await bot_log_channel.send(embed=embed_bot_log)
 
 
@@ -395,8 +442,8 @@ async def on_raw_reaction_add(payload):
     except discord.errors.Forbidden:
         await channel.send(f"Cannot send a DM to {applicant.mention}", delete_after=10)
     except Exception:
-        logging.error("--Raw Reaction Add---")
-        logging.error(traceback.format_exc())
+        logger.error("--Raw Reaction Add---")
+        logger.error(traceback.format_exc())
         bot_log_channel = get(guild.text_channels, name='bot-logs')
         embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description=traceback.format_exc(), color=0x5d4991)
         embed_bot_log.add_field(name="Source", value="on reaction add outer", inline=True)
@@ -466,8 +513,7 @@ async def on_message(message):
                             auto_rank_embed.add_field(name="DPS", value=season_curr['scores']['dps'], inline=True)
                             auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
                             auto_rank_embed.add_field(name="Application declined", value="you have less than the required rio in a specific role", inline=False)
-                            await applicant.create_dm()
-                            await applicant.dm_channel.send(
+                            await applicant.send(
                             f"Hello **{applicant.name}**\n\nThank you for submitting an application to become a booster for ***NOVA***, "
                             "however on this occasion we regret to inform you that your application has been declined.\n"
                             "\nThank you,"
@@ -485,15 +531,15 @@ async def on_message(message):
                     await message.delete()
                     await message.channel.send(f"You used wrong template, check the pinned messages {message.author.mention}", delete_after=10)
         except discord.errors.Forbidden:
-            await message.channel.send(f"Cannot send you a DM to {user.mention}", delete_after=5)
+            await message.channel.send(f"Cannot send a DM to {applicant.mention}", delete_after=5)
         except Exception:
-            logging.error("--Auto Ranks START---")
-            logging.error(traceback.format_exc())
-            logging.error("--Auto Ranks END---")
+            logger.error("--Auto Ranks START---")
+            logger.error(traceback.format_exc())
+            logger.error("--Auto Ranks END---")
             bot_log_channel = get(message.guild.text_channels, name='bot-logs')
             embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on reaction add EU MPlus Applications", color=0x5d4991)
             embed_bot_log.add_field(name="Author", value=message.author.name, inline=True)
-            embed_bot_log.add_field(name="Channel", value=channel.name, inline=False)
+            embed_bot_log.add_field(name="Channel", value=message.channel.name, inline=False)
             embed_bot_log.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
             await bot_log_channel.send(embed=embed_bot_log)
     elif message.channel.id == 815104632208490569: #NA MPlus Applications Channel:
@@ -535,8 +581,7 @@ async def on_message(message):
                             auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
                             mplus_applications_review_channel = get(message.guild.text_channels, id=815104632208490570)
                             auto_rank_embed_sent = await mplus_applications_review_channel.send(embed = auto_rank_embed)
-                            await applicant.create_dm()
-                            await applicant.dm_channel.send(
+                            await applicant.send(
                                 f"Hello **{applicant.name}**\n\nThank you for submitting an application to become a booster for ***NOVA***, "
                                 "all the applications will be verified by our team every day, you don't have to DM us to speed up the process, your DMs will be ignored..\n"
                                 "\nThank you,"
@@ -552,8 +597,7 @@ async def on_message(message):
                             auto_rank_embed.add_field(name="DPS", value=season_curr['scores']['dps'], inline=True)
                             auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
                             auto_rank_embed.add_field(name="Application declined", value="you have less than the required rio in a specific role", inline=False)
-                            await applicant.create_dm()
-                            await applicant.dm_channel.send(
+                            await applicant.send(
                             f"Hello **{applicant.name}**\n\nThank you for submitting an application to become a booster for ***NOVA***, "
                             "however on this occasion we regret to inform you that your application has been declined.\n"
                             "\nThank you,"
@@ -571,15 +615,15 @@ async def on_message(message):
                     await message.delete()
                     await message.channel.send(f"You used wrong template, check the pinned messages {message.author.mention}", delete_after=10)
         except discord.errors.Forbidden:
-            await message.channel.send(f"Cannot send you a DM to {user.mention}", delete_after=5)
+            await message.channel.send(f"Cannot send you a DM to {applicant.mention}", delete_after=5)
         except Exception:
-            logging.error("--Auto Ranks START---")
-            logging.error(traceback.format_exc())
-            logging.error("--Auto Ranks END---")
+            logger.error("--Auto Ranks START---")
+            logger.error(traceback.format_exc())
+            logger.error("--Auto Ranks END---")
             bot_log_channel = get(message.guild.text_channels, name='bot-logs')
             embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on reaction add NA MPlus Applications", color=0x5d4991)
             embed_bot_log.add_field(name="Author", value=message.author.name, inline=True)
-            embed_bot_log.add_field(name="Channel", value=channel.name, inline=False)
+            embed_bot_log.add_field(name="Channel", value=message.channel.name, inline=False)
             embed_bot_log.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
             await bot_log_channel.send(embed=embed_bot_log)
     elif message.channel.id == 817865057051869204: #reclaim-booster-role Request Rank Channel:
@@ -758,9 +802,9 @@ async def on_message(message):
         except discord.errors.Forbidden:
             await message.channel.send(f"Cannot send you a DM to {user.mention}", delete_after=5)
         except Exception:
-            logging.error("--S1 Ranks START---")
-            logging.error(traceback.format_exc())
-            logging.error("--S1 Ranks END---")
+            logger.error("--S1 Ranks START---")
+            logger.error(traceback.format_exc())
+            logger.error("--S1 Ranks END---")
             bot_log_channel = get(message.guild.text_channels, name='bot-logs')
             embed_bot_log = discord.Embed(title="Error Log.", description="Reclaim Booster Channel", color=0x5d4991)
             embed_bot_log.add_field(name="Author", value=message.author.nick, inline=True)
@@ -836,9 +880,9 @@ async def on_message(message):
                 else:
                     await message.delete()
         except Exception:
-            logging.error("--S1 HighKey START---")
-            logging.error(traceback.format_exc())
-            logging.error("--S1 HighKey END---")
+            logger.error("--S1 HighKey START---")
+            logger.error(traceback.format_exc())
+            logger.error("--S1 HighKey END---")
 
     await bot.process_commands(message)
         
@@ -910,11 +954,11 @@ async def CheckCurve(ctx, user: discord.Member, name: str, realm: str):
             if (realm_final.lower().startswith("pozzo") or realm_final.lower()=="hyjal" or 
                     realm_final.lower()=="dalaran" or realm_final.lower().startswith("marécage") or 
                     realm_final.lower()=="exodar" or realm_final.lower()=="themaelstrom") and char_faction.lower() == "alliance":
-                await applicant.add_roles(get(guild.roles, name="A-Vaults"))                
+                await user.add_roles(get(ctx.guild.roles, name="A-Vaults"))                
             elif (realm_final.lower().startswith("pozzo") or realm_final.lower()=="drak'thul" or realm_final.lower()=="burningblade" or
                     realm_final.lower()=="frostmane" or realm_final.lower()=="grimbatol" or realm_final.lower()=="aggra" or 
                     realm_final.lower()=="dalaran" or realm_final.lower().startswith("marécage")) and char_faction.lower() == "horde":
-                await applicant.add_roles(get(guild.roles, name="H-Vaults"))
+                await user.add_roles(get(ctx.guild.roles, name="H-Vaults"))
             if get(ctx.guild.roles, name="Client") in user.roles:
                     await user.remove_roles(get(ctx.guild.roles, name="Client"))
             if get(ctx.guild.roles, name="PickYourRegion") in user.roles:
@@ -927,12 +971,29 @@ async def CheckCurve(ctx, user: discord.Member, name: str, realm: str):
     except commands.BadArgument:
         await ctx.send("Please double check command structure", delete_after=5)
     except Exception:
-        logging.error("--On CheckCurve Command---")
-        logging.error(traceback.format_exc())
-        logging.error("--On CheckCurve Command---")
-        bot_log_channel = get(guild.text_channels, name='bot-logs')
+        logger.error("--On CheckCurve Command---")
+        logger.error(traceback.format_exc())
+        logger.error("--On CheckCurve Command---")
+        bot_log_channel = get(ctx.guild.text_channels, name='bot-logs')
         embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on CheckCurve", color=0x5d4991)
         embed_bot_log.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
         await bot_log_channel.send(embed=embed_bot_log)
         
-bot.run(token)
+async def start_bot():
+    pool = await aiomysql.create_pool(host=DB_HOST, port=3306,
+                            user=DB_USER, password=DB_PASSWORD,
+                            db=DB_DATABASE, autocommit=True)
+
+    bot.pool = pool
+
+    # bot.load_extension("cogs.moderation")
+    # bot.load_extension("cogs.google_sheets")
+
+    await bot.start(token)
+
+try:
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(start_bot())
+except Exception as e:
+    logger.warning("Exception raised from main thread.")
+    logger.exception(e)
