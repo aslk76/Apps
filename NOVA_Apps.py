@@ -920,6 +920,7 @@ async def NameChange(ctx, *, rio_url):
         return
 
     try:
+        end_date = datetime.now(timezone.utc).date()
         async with ctx.bot.pool.acquire() as conn:
             async with conn.cursor() as cursor:
                 query  = """
