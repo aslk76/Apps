@@ -7,8 +7,9 @@ import discord
 import asyncio
 import requests
 import json
+import re
 import socket
-from datetime import datetime, timezone
+from datetime import timedelta, datetime, timezone
 from discord.ext import commands
 from discord.utils import get
 from dotenv import load_dotenv
@@ -27,6 +28,11 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_DATABASE = os.getenv('DB_DATABASE')
 
 intents = discord.Intents().all()
+
+class rio_conf:
+    RAIDERIO_LINK = r"https:\/\/raider\.io\/characters\/eu\/(.+)\/([^?.]+)"
+    base: str = "https://raider.io"
+    role_threshhold: int = 1300
 
 class Mybot(commands.Bot):
   def __init__(self, *args, **kwargs):
@@ -78,7 +84,9 @@ async def on_ready():
             embed_bot_log = discord.Embed(title="Info Log.",
                                 description=f'{bot.user.name} {discord.__version__} has connected to Discord!',
                                 color=0x5d4991)
-            embed_bot_log.set_footer(text=datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None))
+            embed_bot_log.set_footer(text=
+                                "Timestamp (UTC±00:00): "
+                                f"{datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)}")
             await bot_log_channel.send(embed=embed_bot_log)
             running=True
     except Exception:
@@ -88,11 +96,13 @@ async def on_ready():
                                     title="Error Log.",
                                     description="on ready",
                                     color=0x5d4991)
-        embed_bot_log.set_footer(text=datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None))
+        embed_bot_log.set_footer(text=
+                                "Timestamp (UTC±00:00): "
+                                f"{datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)}")
         await bot_log_channel.send(embed=embed_bot_log)
 
 
-@bot.command(pass_context=True)
+@bot.command()
 @commands.has_any_role('NOVA', 'Moderator')
 async def Logout(ctx):
     await ctx.message.delete()
@@ -248,7 +258,7 @@ async def on_raw_reaction_add(payload):
             await applicant.dm_channel.send(
                 f"Hello **{applicant.name}** :slight_smile:\nYour application for ***NOVA*** as a booster has been "
                 "accepted, **CHECK YOUR ROLES** and__ please read all our channels before taking further steps "
-                "inside the community.__\n \n**#rules** That you must follow at all costs or your risk yourself getting Striked / Banned; \n"
+                "inside the community.__\n \n**#rules** That you must follow at all costs or your risk yourself getting Struck / Banned; \n"
                 "**#balance-check** Important info regarding how payment works and to check your weekly earnings; \n"
                 "**#payday-info** To see when the next payment wave will be done;\n"
                 "**#high-key-roles** To get the Highkey Booster role (+14,+15 keys) if you have the required score;\n"
@@ -408,11 +418,11 @@ async def on_raw_reaction_add(payload):
             await applicant.dm_channel.send(
                 f"Hello **{applicant.name}** :slight_smile:\nYour application for ***NOVA*** as a booster has been "
                 "accepted, **CHECK YOUR ROLES** and__ please read all our channels before taking further steps "
-                "inside the community.__\n \n**#rules** That you must follow at all costs or your risk yourself getting Striked / Banned; \n"
+                "inside the community.__\n \n**#rules** That you must follow at all costs or you risk yourself getting Struck / Banned; \n"
                 "**#balance-check** Important info regarding how payment works and to check your weekly earnings; \n"
                 "**#payday-info** To see when the next payment wave will be done;\n"
                 "**#high-key-roles** To get the Highkey Booster role (+14,+15 keys) if you have the required score;\n"
-                "**#pick-your-roles** To request further roles (you don't need to do this if its your first time in);\n"
+                "**#pick-your-roles** To request further roles (you don't need to do this if it's your first time in);\n"
                 "\nThank you,\n"
                 "***NOVA Team***")
             await rio_channel.send(f"`{char_name.capitalize()}-{realm_final} "
@@ -465,9 +475,9 @@ async def on_message(message):
                 if auto_rank_msg[1].lower().startswith('character realm') and not message.author.bot and \
                     message.author.id not in rio_allowed_ids and "https" not in message.content:
                     auto_rank_char_name = auto_rank_msg[0].partition(":")[2].strip()
-                    auto_rank_relam_name = auto_rank_msg[1].partition(":")[2].strip()
+                    auto_rank_realm_name = auto_rank_msg[1].partition(":")[2].strip()
                     response = requests.get(
-                                "https://raider.io/api/v1/characters/profile?region=eu&realm=" + auto_rank_relam_name + 
+                                "https://raider.io/api/v1/characters/profile?region=eu&realm=" + auto_rank_realm_name + 
                                 "&name=" + auto_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
                     if response.status_code == 200:
                         applicant = message.author
@@ -483,7 +493,7 @@ async def on_message(message):
                         season_curr_heal = season_curr['scores']['healer']
                         season_curr_dps = season_curr['scores']['dps']
                         if season_curr_tank >= 1300 or season_curr_heal >= 1300 or season_curr_dps >= 1300:
-                            auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_relam_name}]({resp['profile_url']})")
+                            auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})")
                             auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
                             auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
                             auto_rank_embed.add_field(name="Faction", value=char_faction.capitalize(), inline=True)
@@ -504,7 +514,7 @@ async def on_message(message):
                             await auto_rank_embed_sent.add_reaction('<:nova_c:817558639241592859>')
                             await auto_rank_embed_sent.add_reaction('<:nova_x:817559679760465980>')
                         else:
-                            auto_rank_embed = discord.Embed(title="Application of:", description=f"[{auto_rank_char_name}-{auto_rank_relam_name}]({resp['profile_url']})", color = discord.Color.red())
+                            auto_rank_embed = discord.Embed(title="Application of:", description=f"[{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})", color = discord.Color.red())
                             auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
                             auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
                             auto_rank_embed.add_field(name="Tank", value=season_curr['scores']['tank'], inline=True)
@@ -520,7 +530,7 @@ async def on_message(message):
                             auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed)
                             await auto_rank_embed_sent.add_reaction(u"\u274C")
                     else:
-                        await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_relam_name +") found on Raider.io, double check spelling", delete_after=10)
+                        await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_realm_name +") found on Raider.io, double check spelling", delete_after=10)
                 elif not auto_rank_msg[1].lower().startswith('character realm') or not auto_rank_msg[0].lower().startswith('character name') or \
                     "https" in message.content:
                     await message.delete()
@@ -550,9 +560,9 @@ async def on_message(message):
             if len(auto_rank_msg)==2 and not message.author.bot:
                 if auto_rank_msg[1].lower().startswith('character realm') and not message.author.bot:
                     auto_rank_char_name = auto_rank_msg[0].partition(":")[2].strip()
-                    auto_rank_relam_name = auto_rank_msg[1].partition(":")[2].strip()
+                    auto_rank_realm_name = auto_rank_msg[1].partition(":")[2].strip()
                     response = requests.get(
-                                "https://raider.io/api/v1/characters/profile?region=us&realm=" + auto_rank_relam_name + 
+                                "https://raider.io/api/v1/characters/profile?region=us&realm=" + auto_rank_realm_name + 
                                 "&name=" + auto_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
                     if response.status_code == 200:
                         applicant = message.author
@@ -568,7 +578,7 @@ async def on_message(message):
                         season_curr_heal = season_curr['scores']['healer']
                         season_curr_dps = season_curr['scores']['dps']
                         if season_curr_tank >= 1300 or season_curr_heal >= 1300 or season_curr_dps >= 1300:
-                            auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_relam_name}]({resp['profile_url']})")
+                            auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})")
                             auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
                             auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
                             auto_rank_embed.add_field(name="Faction", value=char_faction.capitalize(), inline=True)
@@ -588,7 +598,7 @@ async def on_message(message):
                             await auto_rank_embed_sent.add_reaction('<:nova_c:817558639241592859>')
                             await auto_rank_embed_sent.add_reaction('<:nova_x:817559679760465980>')
                         else:
-                            auto_rank_embed = discord.Embed(title="Application of:", description=f"[{auto_rank_char_name}-{auto_rank_relam_name}]({resp['profile_url']})", color = discord.Color.red())
+                            auto_rank_embed = discord.Embed(title="Application of:", description=f"[{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})", color = discord.Color.red())
                             auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
                             auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
                             auto_rank_embed.add_field(name="Tank", value=season_curr['scores']['tank'], inline=True)
@@ -604,7 +614,7 @@ async def on_message(message):
                             auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed)
                             await auto_rank_embed_sent.add_reaction(u"\u274C")
                     else:
-                        await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_relam_name +") found on Raider.io, double check spelling", delete_after=10)
+                        await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_realm_name +") found on Raider.io, double check spelling", delete_after=10)
                 elif not auto_rank_msg[1].lower().startswith('character realm') or not auto_rank_msg[0].lower().startswith('character name') or \
                     "https" in message.content:
                     await message.delete()
@@ -818,10 +828,10 @@ async def on_message(message):
             if len(request_rank_msg)>1 and not message.author.bot:
                 if request_rank_msg[1].lower().startswith('character realm') and not message.author.bot and message.author.nick.endswith("[A]"):
                     request_rank_char_name = request_rank_msg[0].partition(":")[2].strip()
-                    request_rank_relam_name = request_rank_msg[1].partition(":")[2].strip()
+                    request_rank_realm_name = request_rank_msg[1].partition(":")[2].strip()
                     if message.author.nick.partition("-")[0].strip().lower() == request_rank_char_name.strip().lower():
                         response = requests.get(
-                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + request_rank_relam_name + 
+                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + request_rank_realm_name + 
                                     "&name=" + request_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
                         if response.status_code == 200:
                             json_str = json.dumps(response.json())
@@ -834,7 +844,7 @@ async def on_message(message):
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
                             if season_curr_all >= 1600:
-                                await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_relam_name +")\nSeason 1: " + str(season_curr_all))
+                                await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="High Key Booster [A]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="High Key Booster [A]"))
                                     await message.add_reaction(u"\u2705")
@@ -842,16 +852,16 @@ async def on_message(message):
                                 await message.channel.send(message.author.mention + "you have less than the required rio, application declined!")
                                 await message.add_reaction(u"\u274C")
                         else:
-                            await message.channel.send("No such character ("+ request_rank_char_name + "-" + request_rank_relam_name +") found on Raider.io, double check spelling")
+                            await message.channel.send("No such character ("+ request_rank_char_name + "-" + request_rank_realm_name +") found on Raider.io, double check spelling")
                     else:
-                        await message.channel.send(message.author.mention + "the character you are applying with doesnt match the character you signed to NOVA!")
+                        await message.channel.send(message.author.mention + "the character you are applying with doesn't match the character you signed to NOVA!")
                         await message.add_reaction(u"\u274C")
                 elif request_rank_msg[1].lower().startswith('character realm') and not message.author.bot and message.author.nick.endswith("[H]"):
                     request_rank_char_name = request_rank_msg[0].partition(":")[2].strip()
-                    request_rank_relam_name = request_rank_msg[1].partition(":")[2].strip()
+                    request_rank_realm_name = request_rank_msg[1].partition(":")[2].strip()
                     if message.author.nick.partition("-")[0].strip().lower() == request_rank_char_name.strip().lower():
                         response = requests.get(
-                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + request_rank_relam_name + 
+                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + request_rank_realm_name + 
                                     "&name=" + request_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
                         if response.status_code == 200:
                             json_str = json.dumps(response.json())
@@ -864,7 +874,7 @@ async def on_message(message):
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
                             if season_curr_all >= 1600:
-                                await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_relam_name +")\nSeason 1: " + str(season_curr_all))
+                                await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="High Key Booster [H]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="High Key Booster [H]"))
                                     await message.add_reaction(u"\u2705")
@@ -872,9 +882,9 @@ async def on_message(message):
                                 await message.channel.send(message.author.mention + "you have less than the required rio, application declined!")
                                 await message.add_reaction(u"\u274C")
                         else:
-                            await message.channel.send("No such character ("+ request_rank_char_name + "-" + request_rank_relam_name +") found on Raider.io, double check spelling")
+                            await message.channel.send("No such character ("+ request_rank_char_name + "-" + request_rank_realm_name +") found on Raider.io, double check spelling")
                     else:
-                        await message.channel.send(message.author.mention + "the character you are applying with doesnt match the character you signed to NOVA!")
+                        await message.channel.send(message.author.mention + "the character you are applying with doesn't match the character you signed to NOVA!")
                         await message.add_reaction(u"\u274C")
                 else:
                     await message.delete()
@@ -886,8 +896,158 @@ async def on_message(message):
     await bot.process_commands(message)
         
 
+@bot.command()
+async def NameChange(ctx, *, rio_url):
+    """To change member name
+        command structure is `apps!NameChange RaiderIO link`
+        example: `apps!NameChange https://raider.io/characters/eu/tarren-mill/Sanfura`
+    """
+    raiderio_regex = re.compile(rio_conf.RAIDERIO_LINK)
+    match = raiderio_regex.findall(rio_url)
 
-@bot.command(pass_context=True)
+    if not match:
+        await ctx.author.send("""
+                            Wrong Raider.IO link, please double check it, 
+                            example: https://raider.io/characters/eu/tarren-mill/Sanfura
+                            """, delete_after=10)
+        return
+
+    realm = match[0][0]
+    char = match[0][1]
+    if not (realm and char):
+        await ctx.author.send(f"No such character ({char}-{realm} "
+                            "found on Raider.io, double check your rio url", delete_after=10)
+        return
+
+    try:
+        async with ctx.bot.pool.acquire() as conn:
+            async with conn.cursor() as cursor:
+                query  = """
+                    SELECT date_of_change FROM name_changes where discord_id = %s 
+                """
+                val = (ctx.author.id,)
+                await cursor.execute(query, val)
+                query_result = await cursor.execute(query, val)
+                if query_result:
+                    (date_of_change,) = await cursor.fetchone()
+                    end_date = date_of_change + timedelta(days=30)
+                else:
+                    date_of_change = None
+
+            if datetime.now(timezone.utc).date() > end_date:
+                confirmation_msg = await ctx.send("""
+                                **Attention!**\n
+                                When changing your name, beware that any pending balance you have will be sent 
+                                to your previous character name. If you no longer have that character, 
+                                make a level 1 with the same name so that it can receive the gold.
+                                NOVA is not responsible if you make an error in changing your name, 
+                                we will send the gold to the associated character names given, 
+                                if you fail to receive it, that is on you. \n
+                                By typing "Yes", you accept these terms. You have 30 seconds to reply here.
+                        """)
+
+                def check(m):
+                    return m.content.lower() == "yes" and m.channel == ctx.channel and m.author == ctx.author
+
+                try:
+                    msg = await bot.wait_for("message", timeout=30.0, check=check)
+                except asyncio.TimeoutError:
+                    await ctx.send("User didn't confirm within 30 seconds, cancelling name change", 
+                                    delete_after=10)
+                    await confirmation_msg.delete()
+                else:
+                    await confirmation_msg.delete()
+                    rio_api = (
+                        f"{rio_conf.base}/api/v1/characters/profile?region=eu"
+                        f"&realm={realm}"
+                        f"&name={char}&fields=mythic_plus_scores_by_season:current"
+                    )
+                    response = requests.get(rio_api)
+                    if response.status_code == 200:
+                        json_str = json.dumps(response.json())
+                        resp = json.loads(json_str)
+                        faction = resp["faction"]
+                        score = resp["mythic_plus_scores_by_season"][0]["scores"]["all"]
+                        if score < rio_conf.role_threshhold:
+                            await ctx.send("The character your are renaming to has less than the required score",
+                                            delete_after = 10)
+                            return
+                        else:
+                            faction_short = "H" if faction == "horde" else "A"
+                            realm_pre = realm.replace(' ', '').replace('-','').capitalize()
+                            if realm_pre.startswith("Pozzo"):
+                                realm_final = "Pozzo"
+                            elif realm_pre == "Dunmodr":
+                                realm_final = "DunModr"
+                            elif realm_pre.startswith("Twisting"):
+                                realm_final = "TwistingNether"
+                            elif realm_pre.startswith("Tarren"):
+                                realm_final = "TarrenMill"
+                            elif realm_pre == "Colinaspardas":
+                                realm_final = "ColinasPardas"
+                            elif realm_pre == "Burninglegion":
+                                realm_final = "BurningLegion"
+                            elif realm_pre == "Themaelstrom":
+                                realm_final = "TheMaelstrom"
+                            elif realm_pre == "Defiasbrotherhood":
+                                realm_final = "Defias"
+                            elif realm_pre == "Shatteredhand":
+                                realm_final = "Shattered"
+                            elif realm_pre.startswith("Argent"):
+                                realm_final = "ArgentDawn"
+                            elif realm_pre == "Burningblade":
+                                realm_final = "BurningBlade"
+                            elif realm_pre.startswith("Aggra"):
+                                realm_final = "Aggra"
+                            elif realm_pre.startswith("Chamberof"):
+                                realm_final = "ChamberofAspects"
+                            elif realm_pre.startswith("Emerald"):
+                                realm_final = "EmeraldDream"
+                            elif realm_pre.startswith("Grim"):
+                                realm_final = "GrimBatol"
+                            elif realm_pre.startswith("Quel"):
+                                realm_final = "Quel'Thalas"
+                            elif realm_pre.startswith("Mal'ganis"):
+                                realm_final = "Mal'Ganis"
+                            elif realm_pre.startswith("Azjol"):
+                                realm_final = "AzjolNerub"
+                            elif realm_pre.startswith("Los"):
+                                realm_final = "LosErrantes"
+                            elif realm_pre.startswith("Twilight"):
+                                realm_final = "Twilight'sHammer"
+                            else:
+                                realm_final = realm_pre
+                            
+                            async with conn.cursor() as cursor:
+                                query = """
+                                        INSERT INTO name_changes 
+                                            (discord_id, old_name, new_name, date_of_change) 
+                                            VALUES (%s, %s, %s, %s)
+                                    """
+                                val = (
+                                    ctx.author.id, ctx.author.display_name, f"{char}-{realm_final} [{faction_short}]", 
+                                    {datetime.now(timezone.utc).date()})
+                                await cursor.execute(query, val)
+                                await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
+            else:
+                await ctx.channel.send(f"You have changed your name in the last 30 days, you cannot change "
+                                    f"again until {end_date}", 
+                                    delete_after=10)        
+    except discord.errors.Forbidden:
+        await ctx.channel.send(f"Cannot send a DM to {ctx.author.mention}", delete_after=10)
+    except Exception:
+        logger.error("--On NameChange Command---")
+        logger.error(traceback.format_exc())
+        logger.error("--On NameChange Command---")
+        bot_log_channel = get(ctx.guild.text_channels, name='bot-logs')
+        embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on CheckCurve", color=0x5d4991)
+        embed_bot_log.set_footer(text=
+                                "Timestamp (UTC±00:00): "
+                                f"{datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)}")
+        await bot_log_channel.send(embed=embed_bot_log)
+
+
+@bot.command()
 @commands.has_any_role('Moderator', 'NOVA', 'Curve Section Leader')
 async def CheckCurve(ctx, user: discord.Member, name: str, realm: str):
     await ctx.message.delete()
@@ -984,10 +1144,6 @@ async def start_bot():
                             db=DB_DATABASE, autocommit=True)
 
     bot.pool = pool
-
-    # bot.load_extension("cogs.moderation")
-    # bot.load_extension("cogs.google_sheets")
-
     await bot.start(token)
 
 try:
