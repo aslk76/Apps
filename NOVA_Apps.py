@@ -940,7 +940,7 @@ async def NameChange(ctx, *, rio_url):
                 (end_date is not None and datetime.now(timezone.utc).date() > end_date)):
                 confirmation_msg = await ctx.send(
                     "**Attention!**\n"
-                    "When changing your name, beware that any pending balance you have will be sent "
+                    f"{command_issuer.mention} When changing your name, beware that any pending balance you have will be sent "
                     "to your previous character name. If you no longer have that character, "
                     "make a level 1 with the same name so that it can receive the gold.\n"
                     "**NOVA** __is not responsible__ if you make an error in changing your name, " 
