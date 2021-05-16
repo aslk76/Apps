@@ -938,14 +938,16 @@ async def NameChange(ctx, *, rio_url):
 
             if ((date_of_change is None and end_date is None) or 
                 (end_date is not None and datetime.now(timezone.utc).date() > end_date)):
-                confirmation_msg = await ctx.send("**Attention!**\n"
-                                "When changing your name, beware that any pending balance you have will be sent "
-                                "to your previous character name. If you no longer have that character, "
-                                "make a level 1 with the same name so that it can receive the gold.\n"
-                                "**NOVA** __is not responsible__ if you make an error in changing your name, " 
-                                "we will send the gold to the associated character names given, "
-                                "if you fail to receive it, that is on you.\n"
-                                "`By typing 'Yes', you accept these terms. You have 30 seconds to reply here.`")
+                confirmation_msg = await ctx.send(
+                    "**Attention!**\n"
+                    "When changing your name, beware that any pending balance you have will be sent "
+                    "to your previous character name. If you no longer have that character, "
+                    "make a level 1 with the same name so that it can receive the gold.\n"
+                    "**NOVA** __is not responsible__ if you make an error in changing your name, " 
+                    "we will send the gold to the associated character names given, "
+                    "if you fail to receive it, that is on you.\n"
+                    "`By typing 'Yes', you accept these terms. You have 30 seconds to reply here.`"
+                )
 
                 def check(m):
                     return m.content.lower() == "yes" and m.channel == ctx.channel and m.author == ctx.author
@@ -1031,9 +1033,11 @@ async def NameChange(ctx, *, rio_url):
                                     {datetime.now(timezone.utc).date()})
                                 await cursor.execute(query, val)
             elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
-                await ctx.send(f"You have changed your name in the last 30 days, you cannot change "
-                                    f"again until {end_date}", 
-                                    delete_after=10)
+                await ctx.send(
+                    f"You have changed your name in the last 30 days, you cannot change "
+                    f"again until {end_date}", 
+                    delete_after=10
+                )
     except discord.errors.Forbidden:
         await ctx.send(f"Cannot send a DM to {ctx.author.mention}", delete_after=10)
     except Exception:
