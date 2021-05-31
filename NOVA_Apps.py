@@ -258,11 +258,11 @@ async def on_raw_reaction_add(payload):
             await applicant.dm_channel.send(
                 f"Hello **{applicant.name}** :slight_smile:\nYour application for ***NOVA*** as a booster has been "
                 "accepted, **CHECK YOUR ROLES** and__ please read all our channels before taking further steps "
-                "inside the community.__\n \n**#rules** That you must follow at all costs or your risk yourself getting Struck / Banned; \n"
-                "**#balance-check** Important info regarding how payment works and to check your weekly earnings; \n"
-                "**#payday-info** To see when the next payment wave will be done;\n"
-                "**#high-key-roles** To get the Highkey Booster role (+14,+15 keys) if you have the required score;\n"
-                "**#pick-your-roles** To request further roles (you don't need to do this if its your first time in);\n"
+                "inside the community.__\n \n**<#815104635584774165>** That you must follow at all costs or your risk yourself getting Struck / Banned; \n"
+                "**<#815104636251275312>** Important info regarding how payment works and to check your weekly earnings; \n"
+                "**<#815104636251275311>** To see when the next payment wave will be done;\n"
+                "**<#815104636037627919>** To get the Highkey Booster role (+14,+15 keys) if you have the required score;\n"
+                "**<#815104636037627917>** To request further roles (you don't need to do this if it's your first time in);\n"
                 "\nThank you,\n"
                 "***NOVA Team***")
             await rio_channel.send(f"`{char_name.capitalize()}-{realm_final} "
@@ -418,11 +418,11 @@ async def on_raw_reaction_add(payload):
             await applicant.dm_channel.send(
                 f"Hello **{applicant.name}** :slight_smile:\nYour application for ***NOVA*** as a booster has been "
                 "accepted, **CHECK YOUR ROLES** and__ please read all our channels before taking further steps "
-                "inside the community.__\n \n**#rules** That you must follow at all costs or you risk yourself getting Struck / Banned; \n"
-                "**#balance-check** Important info regarding how payment works and to check your weekly earnings; \n"
-                "**#payday-info** To see when the next payment wave will be done;\n"
-                "**#high-key-roles** To get the Highkey Booster role (+14,+15 keys) if you have the required score;\n"
-                "**#pick-your-roles** To request further roles (you don't need to do this if it's your first time in);\n"
+                "inside the community.__\n \n**<#815104635584774165>** That you must follow at all costs or you risk yourself getting Struck / Banned; \n"
+                "**<#815104636251275312>** Important info regarding how payment works and to check your weekly earnings; \n"
+                "**<#815104636251275311>** To see when the next payment wave will be done;\n"
+                "**<#815104636037627919>** To get the Highkey Booster role (+14,+15 keys) if you have the required score;\n"
+                "**<#815104636037627917>** To request further roles (you don't need to do this if it's your first time in);\n"
                 "\nThank you,\n"
                 "***NOVA Team***")
             await rio_channel.send(f"`{char_name.capitalize()}-{realm_final} "
