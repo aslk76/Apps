@@ -1164,9 +1164,9 @@ def convert(argument):
 
 
 @commands.has_role('Staff', 'Moderator', 'NOVA')
-async def startGiveaway(ctx, timing, winners: int, *, prize):
+async def StartGiveaway(ctx, timing, winners: int, *, prize):
     """Make a giveaway with this command
-       The command structure is `apps!startGiveaway <time> <amount_winners> <prize>
+       The command structure is `apps!StartGiveaway <time> <amount_winners> <prize>
     """
     await ctx.send('Preparing a cool giveaway for you all. Stand by!', delete_after=3)
     gwembed = discord.Embed(
