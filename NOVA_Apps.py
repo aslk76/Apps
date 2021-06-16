@@ -1162,7 +1162,7 @@ def convert(argument):
             raise commands.BadArgument(f"{key} is not a number!")
     return round(time)
 
-
+@bot.command()
 @commands.has_role('Staff', 'Moderator', 'NOVA')
 async def StartGiveaway(ctx, timing, winners: int, *, prize):
     """Make a giveaway with this command
