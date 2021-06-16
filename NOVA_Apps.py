@@ -1143,10 +1143,10 @@ async def CheckCurve(ctx, user: discord.Member, name: str, realm: str):
         embed_bot_log.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
         await bot_log_channel.send(embed=embed_bot_log)
 
+time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
+def convert(argument):
 
-async def convert(argument):
-    time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
-    time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
     args = argument.lower()
     matches = re.findall(time_regex, args)
     time = 0
@@ -1162,7 +1162,7 @@ async def convert(argument):
     return round(time)
 
 @bot.command()
-@commands.has_role('Staff', 'Moderator', 'NOVA')
+@commands.has_any_role('Staff', 'Moderator', 'NOVA')
 async def StartGiveaway(ctx, timing, winners: int, *, prize):
     """Make a giveaway with this command
        The command structure is `apps!StartGiveaway <time> <amount_winners> <prize>
