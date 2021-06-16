@@ -15,6 +15,7 @@ from discord.utils import get
 from dotenv import load_dotenv
 import aiomysql
 import aiohttp
+import random
 
 
 running=False
@@ -1142,7 +1143,53 @@ async def CheckCurve(ctx, user: discord.Member, name: str, realm: str):
         embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on CheckCurve", color=0x5d4991)
         embed_bot_log.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
         await bot_log_channel.send(embed=embed_bot_log)
-        
+
+time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
+
+def convert(argument):
+    args = argument.lower()
+    matches = re.findall(time_regex, args)
+    time = 0
+    for key, value in matches:
+        try:
+            time += time_dict[value] * float(key)
+        except KeyError:
+            raise commands.BadArgument(
+                f"{value} is an invalid time key! h|m|s|d are valid arguments"
+            )
+        except ValueError:
+            raise commands.BadArgument(f"{key} is not a number!")
+    return round(time)
+
+
+@commands.has_role('Staff', 'Moderator', 'NOVA')
+async def startGiveaway(ctx, timing, winners: int, *, prize):
+    """Make a giveaway with this command
+       The command structure is `apps!startGiveaway <time> <amount_winners> <prize>
+    """
+    await ctx.send('Preparing a cool giveaway for you all. Stand by!', delete_after=3)
+    gwembed = discord.Embed(
+    title="🎉 __**Giveaway**__ 🎉",
+    description=f'Prize: {prize}',
+    color=0xb4e0fc
+    )
+    time = convert(timing)
+    gwembed.set_footer(text=f"This giveaway will end in {time} seconds from this message.")
+    gwembed = await ctx.send(embed=gwembed)
+    await gwembed.add_reaction("🎉")
+    await asyncio.sleep(time)
+    message = await ctx.fetch_message(gwembed.id)
+    users = await message.reactions[0].users().flatten()
+    users.pop(users.index(ctx.guild.me))
+    if len(users) == 0:
+        await ctx.send("No winner was decided.")
+        return
+    for i in range(winners):
+        winner = random.choice(users)
+        await ctx.send(f"**Congrats to: {winner}!**")
+
+
 async def start_bot():
     pool = await aiomysql.create_pool(host=DB_HOST, port=3306,
                             user=DB_USER, password=DB_PASSWORD,
