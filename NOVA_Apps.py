@@ -72,7 +72,8 @@ logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='/NOVA/NOVA_Apps/NOVA_Apps.log', encoding='utf-8', mode='a')
 handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s'))
 logger.addHandler(handler)
-
+time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
+time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
 
 @bot.event
 async def on_ready():
@@ -1144,10 +1145,8 @@ async def CheckCurve(ctx, user: discord.Member, name: str, realm: str):
         embed_bot_log.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
         await bot_log_channel.send(embed=embed_bot_log)
 
-time_regex = re.compile(r"(?:(\d{1,5})(h|s|m|d))+?")
-time_dict = {"h": 3600, "s": 1, "m": 60, "d": 86400}
 
-def convert(argument):
+async def convert(argument):
     args = argument.lower()
     matches = re.findall(time_regex, args)
     time = 0
