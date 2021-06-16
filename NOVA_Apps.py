@@ -1191,7 +1191,7 @@ async def StartGiveaway(ctx, timing, winners: int, *, prize):
 @bot.command
 @commands.has_any_role('Staff', 'Moderator', 'NOVA')
 async def MountsPanels(ctx):
-    log_channel = get(ctx.guild.text_channels, id='852917403004305459')
+    log_channel = get(ctx.guild.text_channels, name='community-support')
     embed=discord.Embed(title="**Voidtalon of the Dark Star**", url="https://www.wowhead.com/item=121815/voidtalon-of-the-dark-star", description="Corrupted by the presence of the Dark Star in Draenor, the Voidtalons resisted being broken by the Shadowmoon Clan and were ultimately destroyed by Ner'zhul. Only a single egg remains, lost in the void.", color=0x711e6e)
     embed.set_thumbnail(url="https://perfectway.one/images/prev/7c3dbd88853217c857ffce7eba1ce6c6_s300x350.png")
     embed.add_field(name="Price:", value="700k", inline=True)
