@@ -1188,6 +1188,17 @@ async def StartGiveaway(ctx, timing, winners: int, *, prize):
         winner = random.choice(users)
         await ctx.send(f"**Congrats to: {winner}!**")
 
+@bot.command
+@commands.has_any_role('Staff', 'Moderator', 'NOVA')
+async def MountsPanels(ctx):
+    log_channel = get(ctx.guild.text_channels, id='852917403004305459')
+    embed=discord.Embed(title="**Voidtalon of the Dark Star**", url="https://www.wowhead.com/item=121815/voidtalon-of-the-dark-star", description="Corrupted by the presence of the Dark Star in Draenor, the Voidtalons resisted being broken by the Shadowmoon Clan and were ultimately destroyed by Ner'zhul. Only a single egg remains, lost in the void.", color=0x711e6e)
+    embed.set_thumbnail(url="https://perfectway.one/images/prev/7c3dbd88853217c857ffce7eba1ce6c6_s300x350.png")
+    embed.add_field(name="Price:", value="700k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-4 Days", inline=True)
+    sent_embed = await log_channel.send(embed=embed)
+    embed.set_footer(text="Note: Having a character level 17-50 on any faction helps a lot.")
+    await sent_embed.edit(embed=embed)
 
 async def start_bot():
     pool = await aiomysql.create_pool(host=DB_HOST, port=3306,
