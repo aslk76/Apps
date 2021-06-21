@@ -962,7 +962,13 @@ async def on_message(message):
         except Exception:
             logger.error("--S2 HighKey START---")
             logger.error(traceback.format_exc())
-            logger.error("--S2 HighKey END---")        
+            logger.error("--S2 HighKey END---")
+            bot_log_channel = get(message.guild.text_channels, name='bot-logs')
+            embed_bot_log = discord.Embed(title="Error Log.", description="Reclaim Booster Channel", color=0x5d4991)
+            embed_bot_log.add_field(name="Author", value=message.author.nick, inline=True)
+            embed_bot_log.add_field(name="Content", value=message.content, inline=False)
+            embed_bot_log.set_footer(text="Timestamp: " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"))
+            await bot_log_channel.send(embed=embed_bot_log)       
 
     await bot.process_commands(message)
         
