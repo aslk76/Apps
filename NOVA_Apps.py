@@ -892,6 +892,77 @@ async def on_message(message):
             logger.error("--S1 HighKey START---")
             logger.error(traceback.format_exc())
             logger.error("--S1 HighKey END---")
+    elif message.channel.id == 856561520611688478: #s2 get high rank again:
+        try:
+            await asyncio.sleep(3)
+            request_rank_msg = message.content.split("\n")
+            if len(request_rank_msg)>1 and not message.author.bot:
+                if request_rank_msg[1].lower().startswith('character realm') and not message.author.bot and message.author.nick.endswith("[A]"):
+                    request_rank_char_name = request_rank_msg[0].partition(":")[2].strip()
+                    request_rank_realm_name = request_rank_msg[1].partition(":")[2].strip()
+                    if message.author.nick.partition("-")[0].strip().lower() == request_rank_char_name.strip().lower():
+                        response = requests.get(
+                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + request_rank_realm_name + 
+                                    "&name=" + request_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
+                        if response.status_code == 200:
+                            json_str = json.dumps(response.json())
+                            resp = json.loads(json_str)
+                            char_class = resp['class']
+                            char_faction = resp['faction']
+                            season = resp['mythic_plus_scores_by_season']
+                            #season_4_pre = season[0]
+                            #season_4_pre_all = season_4_pre["scores"]["all"]
+                            season_curr = season[0]
+                            season_curr_all = season_curr["scores"]["all"]
+                            if season_curr_all >= 2000:
+                                await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
+                                if get(message.guild.roles, id=815104630433775617) not in message.author.roles:
+                                    await message.author.add_roles(get(message.guild.roles, id=815104630433775617))
+                                    await message.add_reaction(u"\u2705")
+                            else:
+                                await message.channel.send(message.author.mention + "you have less than the required rio, application declined!")
+                                await message.add_reaction(u"\u274C")
+                        else:
+                            await message.channel.send("No such character ("+ request_rank_char_name + "-" + request_rank_realm_name +") found on Raider.io, double check spelling")
+                    else:
+                        await message.channel.send(message.author.mention + "the character you are applying with doesn't match the character you signed to NOVA!")
+                        await message.add_reaction(u"\u274C")
+                elif request_rank_msg[1].lower().startswith('character realm') and not message.author.bot and message.author.nick.endswith("[H]"):
+                    request_rank_char_name = request_rank_msg[0].partition(":")[2].strip()
+                    request_rank_realm_name = request_rank_msg[1].partition(":")[2].strip()
+                    if message.author.nick.partition("-")[0].strip().lower() == request_rank_char_name.strip().lower():
+                        response = requests.get(
+                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + request_rank_realm_name + 
+                                    "&name=" + request_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
+                        if response.status_code == 200:
+                            json_str = json.dumps(response.json())
+                            resp = json.loads(json_str)
+                            char_class = resp['class']
+                            char_faction = resp['faction']
+                            season = resp['mythic_plus_scores_by_season']
+                            #season_4_pre = season[0]
+                            #season_4_pre_all = season_4_pre["scores"]["all"]
+                            season_curr = season[0]
+                            season_curr_all = season_curr["scores"]["all"]
+                            if season_curr_all >= 2000:
+                                await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
+                                if get(message.guild.roles, id=815104630458417182) not in message.author.roles:
+                                    await message.author.add_roles(get(message.guild.roles, id=815104630458417182))
+                                    await message.add_reaction(u"\u2705")
+                            else:
+                                await message.channel.send(message.author.mention + "you have less than the required rio, application declined!")
+                                await message.add_reaction(u"\u274C")
+                        else:
+                            await message.channel.send("No such character ("+ request_rank_char_name + "-" + request_rank_realm_name +") found on Raider.io, double check spelling")
+                    else:
+                        await message.channel.send(message.author.mention + "the character you are applying with doesn't match the character you signed to NOVA!")
+                        await message.add_reaction(u"\u274C")
+                else:
+                    await message.delete()
+        except Exception:
+            logger.error("--S2 HighKey START---")
+            logger.error(traceback.format_exc())
+            logger.error("--S2 HighKey END---")        
 
     await bot.process_commands(message)
         
