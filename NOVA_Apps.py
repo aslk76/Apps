@@ -916,8 +916,8 @@ async def on_message(message):
                             season_curr_all = season_curr["scores"]["all"]
                             if season_curr_all >= 2000:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
-                                if get(message.guild.roles, id=815104630433775617) not in message.author.roles:
-                                    await message.author.add_roles(get(message.guild.roles, id=815104630433775617))
+                                if get(message.guild.roles, name="S2 High Booster [A]") not in message.author.roles:
+                                    await message.author.add_roles(get(message.guild.roles, name="S2 High Booster [A]"))
                                     await message.add_reaction(u"\u2705")
                             else:
                                 await message.channel.send(message.author.mention + "you have less than the required rio, application declined!")
@@ -946,8 +946,8 @@ async def on_message(message):
                             season_curr_all = season_curr["scores"]["all"]
                             if season_curr_all >= 2000:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
-                                if get(message.guild.roles, id=815104630458417182) not in message.author.roles:
-                                    await message.author.add_roles(get(message.guild.roles, id=815104630458417182))
+                                if get(message.guild.roles, name="S2 High Booster [H]") not in message.author.roles:
+                                    await message.author.add_roles(get(message.guild.roles, name="S2 High Booster [H]"))
                                     await message.add_reaction(u"\u2705")
                             else:
                                 await message.channel.send(message.author.mention + "you have less than the required rio, application declined!")
