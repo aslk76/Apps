@@ -33,7 +33,9 @@ intents = discord.Intents().all()
 class rio_conf:
     RAIDERIO_LINK = r"https:\/\/raider\.io\/characters\/eu\/(.+)\/([^?.]+)"
     base: str = "https://raider.io"
-    role_threshhold: int = 1300
+    role_threshhold: int = 1800
+    highkey_threshhold: int = 2100
+    s2_highkey_threshhold: int = 2500
 
 class Mybot(commands.Bot):
   def __init__(self, *args, **kwargs):
@@ -182,17 +184,17 @@ async def on_raw_reaction_add(payload):
                 realm_final = "Twilight'sHammer"
             else:
                 realm_final = realm_pre
-            if float(dps_score) >= 1300:
+            if float(dps_score) >= rio_conf.role_threshhold:
                 dps_role = "Damage"
                 await applicant.add_roles(get(guild.roles, name=dps_role))
             else:
                 dps_role = None
-            if float(heal_score) >= 1300:
+            if float(heal_score) >= rio_conf.role_threshhold:
                 healer_role = "Heal"
                 await applicant.add_roles(get(guild.roles, name=healer_role))
             else:
                 healer_role = None
-            if float(tank_score) >= 1300:
+            if float(tank_score) >= rio_conf.role_threshhold:
                 tank_role = "Tank"
                 await applicant.add_roles(get(guild.roles, name=tank_role))
             else:
@@ -342,17 +344,17 @@ async def on_raw_reaction_add(payload):
                 realm_final = "Twilight'sHammer"
             else:
                 realm_final = realm_pre
-            if float(dps_score) >= 1300:
+            if float(dps_score) >= rio_conf.role_threshhold:
                 dps_role = "Damage"
                 await applicant.add_roles(get(guild.roles, name=dps_role))
             else:
                 dps_role = None
-            if float(heal_score) >= 1300:
+            if float(heal_score) >= rio_conf.role_threshhold:
                 healer_role = "Heal"
                 await applicant.add_roles(get(guild.roles, name=healer_role))
             else:
                 healer_role = None
-            if float(tank_score) >= 1300:
+            if float(tank_score) >= rio_conf.role_threshhold:
                 tank_role = "Tank"
                 await applicant.add_roles(get(guild.roles, name=tank_role))
             else:
@@ -492,7 +494,7 @@ async def on_message(message):
                         season_curr_tank = season_curr['scores']['tank']
                         season_curr_heal = season_curr['scores']['healer']
                         season_curr_dps = season_curr['scores']['dps']
-                        if season_curr_tank >= 1300 or season_curr_heal >= 1300 or season_curr_dps >= 1300:
+                        if season_curr_tank >= rio_conf.role_threshhold or season_curr_heal >= rio_conf.role_threshhold or season_curr_dps >= rio_conf.role_threshhold:
                             auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})")
                             auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
                             auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
@@ -577,7 +579,7 @@ async def on_message(message):
                         season_curr_tank = season_curr['scores']['tank']
                         season_curr_heal = season_curr['scores']['healer']
                         season_curr_dps = season_curr['scores']['dps']
-                        if season_curr_tank >= 1300 or season_curr_heal >= 1300 or season_curr_dps >= 1300:
+                        if season_curr_tank >= rio_conf.role_threshhold or season_curr_heal >= rio_conf.role_threshhold or season_curr_dps >= rio_conf.role_threshhold:
                             auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})")
                             auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
                             auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
@@ -705,17 +707,17 @@ async def on_message(message):
                             realm_final = "Twilight'sHammer"
                         else:
                             realm_final = realm_pre
-                        if season_4_dps >= 1300:
+                        if season_4_dps >= rio_conf.role_threshhold:
                             dps_role = "Damage"
                             await user.add_roles(get(message.guild.roles, name=dps_role))
                         else:
                             dps_role = None
-                        if season_4_healer >= 1300:
+                        if season_4_healer >= rio_conf.role_threshhold:
                             healer_role = "Heal"
                             await user.add_roles(get(message.guild.roles, name=healer_role))
                         else:
                             healer_role = None
-                        if season_4_tank >= 1300:
+                        if season_4_tank >= rio_conf.role_threshhold:
                             tank_role = "Tank"
                             await user.add_roles(get(message.guild.roles, name=tank_role))
                         else:
@@ -843,7 +845,7 @@ async def on_message(message):
                             #season_4_pre_all = season_4_pre["scores"]["all"]
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
-                            if season_curr_all >= 1600:
+                            if season_curr_all >= rio_conf.highkey_threshhold:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="High Key Booster [A]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="High Key Booster [A]"))
@@ -873,7 +875,7 @@ async def on_message(message):
                             #season_4_pre_all = season_4_pre["scores"]["all"]
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
-                            if season_curr_all >= 1600:
+                            if season_curr_all >= rio_conf.highkey_threshhold:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="High Key Booster [H]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="High Key Booster [H]"))
@@ -915,7 +917,7 @@ async def on_message(message):
                             #season_4_pre_all = season_4_pre["scores"]["all"]
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
-                            if season_curr_all >= 2000:
+                            if season_curr_all >= rio_conf.s2_highkey_threshhold:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="S2 High Booster [A]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="S2 High Booster [A]"))
@@ -945,7 +947,7 @@ async def on_message(message):
                             #season_4_pre_all = season_4_pre["scores"]["all"]
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
-                            if season_curr_all >= 2000:
+                            if season_curr_all >= rio_conf.s2_highkey_threshhold:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="S2 High Booster [H]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="S2 High Booster [H]"))
