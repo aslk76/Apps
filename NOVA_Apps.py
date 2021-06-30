@@ -984,7 +984,8 @@ async def NameChange(ctx, *, rio_url):
     """
     raiderio_regex = re.compile(rio_conf.RAIDERIO_LINK)
     match = raiderio_regex.findall(rio_url)
-    command_issuer = ctx.author.id
+    command_issuer = ctx.author
+    
 
     if not match:
         await ctx.author.send("""
@@ -1006,7 +1007,7 @@ async def NameChange(ctx, *, rio_url):
                 query  = """
                     SELECT date_of_change FROM name_changes where discord_id = %s 
                 """
-                val = (command_issuer,)
+                val = (command_issuer.id,)
                 await cursor.execute(query, val)
                 query_result = await cursor.execute(query, val)
                 if query_result:
