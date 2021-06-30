@@ -1012,7 +1012,7 @@ async def NameChange(ctx, *, rio_url):
                 query_result = await cursor.execute(query, val)
                 if query_result:
                     (date_of_change,) = await cursor.fetchone()
-                    end_date = date_of_change + timedelta(days=30)
+                    end_date = date_of_change + timedelta(days=60)
                 else:
                     date_of_change = None
                     end_date = None
@@ -1116,7 +1116,7 @@ async def NameChange(ctx, *, rio_url):
                             await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
             elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
                 await ctx.send(
-                    f"You have changed your name in the last 30 days, you cannot change "
+                    f"You have changed your name in the last 60 days, you cannot change "
                     f"again until {end_date}", 
                     delete_after=10
                 )
