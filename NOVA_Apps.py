@@ -1102,7 +1102,7 @@ async def NameChange(ctx, *, rio_url):
                             else:
                                 realm_final = realm_pre
                             
-                            await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
+                            
                             async with conn.cursor() as cursor:
                                 query = """
                                         INSERT INTO name_changes 
@@ -1113,6 +1113,7 @@ async def NameChange(ctx, *, rio_url):
                                     ctx.author.id, ctx.author.display_name, f"{char}-{realm_final} [{faction_short}]", 
                                     {datetime.now(timezone.utc).date()})
                                 await cursor.execute(query, val)
+                            await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
             elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
                 await ctx.send(
                     f"You have changed your name in the last 30 days, you cannot change "
