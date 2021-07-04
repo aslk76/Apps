@@ -1051,6 +1051,7 @@ async def NameChange(ctx, *, rio_url):
                         json_str = json.dumps(response.json())
                         resp = json.loads(json_str)
                         faction = resp["faction"]
+                        rio_name = resp["name"]
                         score = resp["mythic_plus_scores_by_season"][0]["scores"]["all"]
                         if score < rio_conf.role_threshhold:
                             await ctx.send("The character your are renaming to has less than the required score",
@@ -1110,10 +1111,10 @@ async def NameChange(ctx, *, rio_url):
                                             VALUES (%s, %s, %s, %s)
                                     """
                                 val = (
-                                    ctx.author.id, ctx.author.display_name, f"{char}-{realm_final} [{faction_short}]", 
+                                    ctx.author.id, ctx.author.display_name, f"{rio_name}-{realm_final} [{faction_short}]", 
                                     {datetime.now(timezone.utc).date()})
                                 await cursor.execute(query, val)
-                            await ctx.author.edit(nick=f"{char}-{realm_final} [{faction_short}]")
+                            await ctx.author.edit(nick=f"{rio_name}-{realm_final} [{faction_short}]")
             elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
                 await ctx.send(
                     f"You have changed your name in the last 60 days, you cannot change "
