@@ -33,9 +33,9 @@ intents = discord.Intents().all()
 class rio_conf:
     RAIDERIO_LINK = r"https:\/\/raider\.io\/characters\/eu\/(.+)\/([^?.]+)"
     base: str = "https://raider.io"
-    role_threshhold: int = 1500
-    highkey_threshhold: int = 1750
-    s2_highkey_threshhold: int = 2500
+    role_threshhold: int = 2100
+    highkey_threshhold: int = 2400
+    s2_highkey_threshhold: int = 2700
 
 class Mybot(commands.Bot):
   def __init__(self, *args, **kwargs):
