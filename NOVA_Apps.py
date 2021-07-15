@@ -529,7 +529,7 @@ async def on_message(message):
                             "however on this occasion we regret to inform you that your application has been declined.\n"
                             "\nThank you,"
                             "\n***NOVA Team***")
-                            auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed)
+                            auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed, delete_after=10)
                             await auto_rank_embed_sent.add_reaction(u"\u274C")
                     else:
                         await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_realm_name +") found on Raider.io, double check spelling", delete_after=10)
@@ -613,7 +613,7 @@ async def on_message(message):
                             "however on this occasion we regret to inform you that your application has been declined.\n"
                             "\nThank you,"
                             "\n***NOVA Team***")
-                            auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed)
+                            auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed, delete_after=10)
                             await auto_rank_embed_sent.add_reaction(u"\u274C")
                     else:
                         await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_realm_name +") found on Raider.io, double check spelling", delete_after=10)
