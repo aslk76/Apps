@@ -1284,15 +1284,6 @@ async def MountsPanels(ctx):
     embed.set_footer(text="Note: Having a character level 17-50 on any faction helps a lot.")
     await log_channel.send(embed=embed)
 
-
-@bot.command()
-@commands.has_any_role('developer', 'Moderator', 'NOVA')
-async def Say(ctx, *, command):
-    """Does this even work??
-    """
-    await ctx.send(command)
-
-
 async def start_bot():
     pool = await aiomysql.create_pool(host=DB_HOST, port=3306,
                             user=DB_USER, password=DB_PASSWORD,
