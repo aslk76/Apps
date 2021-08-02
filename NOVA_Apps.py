@@ -1276,13 +1276,189 @@ async def StartGiveaway(ctx, timing, winners: int, *, prize):
 async def MountsPanels(ctx):
     """Does this even work??
     """
-    log_channel = get(ctx.guild.text_channels, name='community-support')
     embed=discord.Embed(title="**Voidtalon of the Dark Star**", url="https://www.wowhead.com/item=121815/voidtalon-of-the-dark-star", description="Corrupted by the presence of the Dark Star in Draenor, the Voidtalons resisted being broken by the Shadowmoon Clan and were ultimately destroyed by Ner'zhul. Only a single egg remains, lost in the void.", color=0x711e6e)
     embed.set_thumbnail(url="https://perfectway.one/images/prev/7c3dbd88853217c857ffce7eba1ce6c6_s300x350.png")
     embed.add_field(name="Price:", value="700k", inline=True)
     embed.add_field(name="Delivery time:", value="1-4 Days", inline=True)
     embed.set_footer(text="Note: Having a character level 17-50 on any faction helps a lot.")
-    await log_channel.send(embed=embed)
+    await ctx.send(embed=embed)
+    embed=discord.Embed(title="Warlords of Draenor rare mount", description="Bloodhoof Bulll - Great Greytusk - Mottled Meadowstomper - Sapphire Riverbeast - Sunhide Gronning - Swift Breezestrider", color=0x913801)
+    embed.set_thumbnail(url="https://pngimg.com/uploads/warcraft/warcraft_PNG36.png")
+    embed.add_field(name="Price:", value="50k each", inline=True)
+    embed.add_field(name="Delivery time:", value="1-2 Days", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # Elusive Quickhoof:
+
+    embed=discord.Embed(title="Elusive Quickhoof", color=0x4b4f52)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/854841243015839755/Untitled-3.png")
+    embed.add_field(name="Price:", value="300k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-3 days", inline=True)
+    await ctx.send(embed=embed)
+    # Fabious:
+
+    embed=discord.Embed(title="Fabious", color=0x7c88ba)
+    embed.set_thumbnail(url="https://wow.zamimg.com/modelviewer/live/webthumbs/npc/192/88768.png")
+    embed.add_field(name="Price:", value="600k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 Days", inline=True)
+    embed.add_field(name="Note:", value="You NEED to have a selfie camera and have the Nazjatar zone unlocked", inline=True)
+    await ctx.send(embed=embed)
+
+    # Frightened Kodo:
+
+    embed=discord.Embed(title="Frightened Kodo", color=0x6c5728)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/854844474794311700/Untitled-4.png")
+    embed.add_field(name="Price:", value="200k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-4 days", inline=True)
+    await ctx.send(embed=embed)
+
+    # Grey Riding Camel:
+
+    embed=discord.Embed(title="Grey Riding Camel", color=0x595751)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/565143528393539594/854783223628300329/grey-riding-camel-fos1.png")
+    embed.add_field(name="Price:", value="300k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 Days", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # Long-Forgotten Hippogryph: 
+
+    embed=discord.Embed(title="Long-Forgotten Hippogryh", color=0xa673a1)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/854856641685225512/Untitled-5.png")
+    embed.add_field(name="Price:", value="75k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 days", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # Phosphorescent Stone Drake: (Check picture)
+
+    embed=discord.Embed(title="Phosphorescent Stone Drake", color=0x874fda)
+    embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/p/h/phosphorescent-stone-drake.png")
+    embed.add_field(name="Price:", value="350k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 Days", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # Time-Lost Proto-Drake:
+
+    embed=discord.Embed(title="Time-Lost Proto-Drake", color=0x735212)
+    embed.set_thumbnail(url="https://wow.zamimg.com/modelviewer/live/webthumbs/npc/141/28045.webp")
+    embed.add_field(name="Price:", value="450k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 Days", inline=True)
+    await ctx.send(embed=embed)
+
+
+
+
+    # Voidtalon:
+
+    embed=discord.Embed(title="Voidtalon of the Dark Star", color=0x6826cb)
+    embed.set_thumbnail(url="https://wow.zamimg.com/modelviewer/live/webthumbs/npc/129/38785.png")
+    embed.add_field(name="Price:", value="700k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-4 Days", inline=True)
+    embed.add_field(name="Note:", value="Having a character level 17-50 on any faction is a big help", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # PvP Mounts:
+
+    # Ashhide Mushan Beast – (EDIT THIS WITH A NOTE TEXT)
+    # Ashide Mushan + “Fire-Wathcher” Titel
+
+    embed=discord.Embed(title="Ashhide Mushan Beast and "Fire-Wathcher" Titel", color=0x3f2e29)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/855097601119748116/Untitled-7.png")
+    embed.add_field(name="Price for mount:", value="80k", inline=True)
+    embed.add_field(name="Price for mount + Titel", value="175k", inline=False)
+    embed.add_field(name="Delivery time:", value="1-3 days", inline=False)
+    await ctx.send(embed=embed)
+
+
+
+    # Secret Mounts:
+
+    # Fathom Dweller:
+
+    embed=discord.Embed(title="Fathom Dweller", color=0x7060ae)
+    embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/f/a/fathom-dweller.png")
+    embed.add_field(name="Price:", value="300k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 days", inline=True)
+    await ctx.send(embed=embed)
+
+    # Hivemind:
+
+    embed=discord.Embed(title="The Hivemind", color=0x715d89)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/855097602177630208/Untitled-8.png")
+    embed.add_field(name="Price:", value="300k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-3 days", inline=True)
+    await ctx.send(embed=embed)
+
+    # Riddler’s Mind Worm: 
+
+    embed=discord.Embed(title="Riddler's Mind Worm", color=0x2b4d69)
+    embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/r/i/riddlers-mind-worm.png")
+    embed.add_field(name="Price:", value="300k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-4 days", inline=True)
+    await ctx.send(embed=embed)
+
+    # Smoldering Ember Wyrm:
+
+    embed=discord.Embed(title="Smoldering Ember Wyrm", color=0xbb3d10)
+    embed.set_thumbnail(url="https://static.boostbay.com/site/images/landing/common/first-block/wow/101_buy-smoldering-ember-wyrm_max.png")
+    embed.add_field(name="Price:", value="150k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-2 days", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # Zandalari Warbringers:
+    # Amber Primordial Direhorn
+    # Jade Primordial Direhorn
+    # Slate Primordial Direhorn
+
+    embed=discord.Embed(title="Zandalari Warbringers", description="Amber Primordial Direhorn - Jade Primordial Direhorn - Slate Primordial Direhorn", color=0x6a7a8f)
+    embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/s/l/slate-primordial-direhorn.png")
+    embed.add_field(name="Price:", value="250k each or 650k for all 3", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 days", inline=False)
+    embed.add_field(name="Note:", value="Each mount have a 5% drop chance", inline=True)
+    await ctx.send(embed=embed)
+
+
+    # Netherwing Reputation:
+
+    embed=discord.Embed(title="Netherwing Reputation", description="Azure Netherwing Drake - Cobalt Netherwing Drake - Onyx Netherwing Drake - Purple Netherwing Drake - Veridian Netherwing Drake - Violet Netherwing Drake", color=0x2c5f92)
+    embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/a/z/azure-netherwing-drake.png")
+    embed.add_field(name="Price:", value="7.5k per Netherwing Egg or 800k from friendly to Exalted", inline=True)
+    embed.add_field(name="Delivery time:", value="1-7 days", inline=False)
+    embed.add_field(name="Note:", value="You need to have completed a short questline. The quest line is starting with the quest "Kindness"", inline=True)
+    await ctx.send(embed=embed)
+
+    # Miscellaneous Boosts:
+
+    # Burgy Blackheart’s Handsome Hat Toy:
+
+    embed=discord.Embed(title="Burgy Blackheart's Handsome Hat Toy", color=0x363c8c)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/855101012539604992/Untitled-9.png")
+    embed.add_field(name="Price", value="50k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-2 days", inline=True)
+    await ctx.send(embed=embed)
+
+    # Hunter Pets:
+
+    embed=discord.Embed(title="Hunter pets", color=0xa7cd71)
+    embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/855101004448792586/Untitled-10.png")
+    embed.add_field(name="Price:", value="75k", inline=True)
+    embed.add_field(name="Delivery time:", value="1-3 days", inline=False)
+    await ctx.send(embed=embed)
+
+    # Springfur Alpaca:
+
+    embed=discord.Embed(title="Springfur Alpaca", color=0x9b7c58)
+    embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/s/p/springfur-alpaca.png")
+    embed.add_field(name="Price:", value="400k", inline=True)
+    embed.add_field(name="Delivery time:", value="7 days", inline=True)
+    embed.add_field(name="Note:", value="This takes 7 days to obtain. ~20 min per day", inline=True)
+    await ctx.send(embed=embed)
+
 
 async def start_bot():
     pool = await aiomysql.create_pool(host=DB_HOST, port=3306,
