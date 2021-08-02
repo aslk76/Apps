@@ -1366,7 +1366,7 @@ async def MountsPanels(ctx):
     # Ashhide Mushan Beast – (EDIT THIS WITH A NOTE TEXT)
     # Ashide Mushan + “Fire-Wathcher” Titel
 
-    embed=discord.Embed(title="Ashhide Mushan Beast and "Fire-Wathcher" Titel", color=0x3f2e29)
+    embed=discord.Embed(title="Ashhide Mushan Beast and \"Fire-Wathcher\" Title", color=0x3f2e29)
     embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/688836139922227237/855097601119748116/Untitled-7.png")
     embed.add_field(name="Price for mount:", value="80k", inline=True)
     embed.add_field(name="Price for mount + Titel", value="175k", inline=False)
@@ -1429,7 +1429,7 @@ async def MountsPanels(ctx):
     embed.set_thumbnail(url="https://cdn.itemforge.com/catalog/product/cache/image/1000x1320/e9c3970ab036de70892d86c6d221abfe/a/z/azure-netherwing-drake.png")
     embed.add_field(name="Price:", value="7.5k per Netherwing Egg or 800k from friendly to Exalted", inline=True)
     embed.add_field(name="Delivery time:", value="1-7 days", inline=False)
-    embed.add_field(name="Note:", value="You need to have completed a short questline. The quest line is starting with the quest "Kindness"", inline=True)
+    embed.add_field(name="Note:", value="You need to have completed a short questline. The quest line is starting with the quest \"Kindness\"", inline=True)
     await ctx.send(embed=embed)
 
     # Miscellaneous Boosts:
