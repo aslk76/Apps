@@ -1100,6 +1100,8 @@ async def NameChange(ctx, *, rio_url):
                                 realm_final = "LosErrantes"
                             elif realm_pre.startswith("Twilight"):
                                 realm_final = "Twilight'sHammer"
+                            elif realm_pre == "Zuljin":
+                                realm_final = "Zul'jin"
                             else:
                                 realm_final = realm_pre
                             
@@ -1272,7 +1274,7 @@ async def StartGiveaway(ctx, timing, winners: int, *, prize):
         await ctx.send(f"**Congrats to: {winner}!**")
 
 @bot.command()
-@commands.has_any_role('Staff', 'Moderator', 'NOVA')
+@commands.has_any_role('staff active', 'Moderator', 'NOVA')
 async def MountsPanels(ctx):
     """Does this even work??
     """
