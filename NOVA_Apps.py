@@ -34,8 +34,8 @@ class rio_conf:
     RAIDERIO_LINK = r"https:\/\/raider\.io\/characters\/eu\/(.+)\/([^?.]+)"
     base: str = "https://raider.io"
     role_threshhold: int = 2100
-    highkey_threshhold: int = 2200
-    s2_highkey_threshhold: int = 2500
+    highkey_threshhold: int = 2300
+    hightier_threshhold: int = 2500
 
 class Mybot(commands.Bot):
   def __init__(self, *args, **kwargs):
@@ -917,7 +917,7 @@ async def on_message(message):
                             #season_4_pre_all = season_4_pre["scores"]["all"]
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
-                            if season_curr_all >= rio_conf.s2_highkey_threshhold:
+                            if season_curr_all >= rio_conf.hightier_threshhold:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="S2 High Booster [A]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="S2 High Booster [A]"))
@@ -947,7 +947,7 @@ async def on_message(message):
                             #season_4_pre_all = season_4_pre["scores"]["all"]
                             season_curr = season[0]
                             season_curr_all = season_curr["scores"]["all"]
-                            if season_curr_all >= rio_conf.s2_highkey_threshhold:
+                            if season_curr_all >= rio_conf.hightier_threshhold:
                                 await message.channel.send("Character ("+ request_rank_char_name + "-" + request_rank_realm_name +")\nSeason 1: " + str(season_curr_all))
                                 if get(message.guild.roles, name="S2 High Booster [H]") not in message.author.roles:
                                     await message.author.add_roles(get(message.guild.roles, name="S2 High Booster [H]"))
