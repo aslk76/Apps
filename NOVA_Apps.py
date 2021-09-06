@@ -1156,14 +1156,13 @@ async def filterOldBoosterRole(ctx):
         MBoosterA = get(ctx.guild.roles, name='M+ Booster [A]')
         HighKeyBoosterH = get(ctx.guild.roles, name='High Key Booster [H]')
         MBoosterH = get(ctx.guild.roles, name='M+ Booster [H]')
-        
+
         buggy_member_ids =[579155972115660803, 131533528616665089, 753029074531909694]
         booster_roles = [HighKeyBoosterA,MBoosterA,HighKeyBoosterH,MBoosterH]
-        old_boosterA = get(ctx.guild.roles, name="815104630517268532")
-        old_boosterH = get(ctx.guild.roles, name="815104630517268531")
+        old_boosterA = get(ctx.guild.roles, id=815104630517268532)
+        old_boosterH = get(ctx.guild.roles, id=815104630517268531)
         async for member in ctx.guild.fetch_members():
             booster_roles_check =  any(item in member.roles for item in booster_roles)
-            await ctx.send(f"{member.display_name} {booster_roles_check}")
             if (not member.bot and member.nick is not None and pickyourregion_role not in member.roles and 
                 client_role not in member.roles and clientNA_role not in member.roles and 
                 management_role not in member.roles and staff_role not in member.roles and 
