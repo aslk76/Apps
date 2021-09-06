@@ -1139,38 +1139,49 @@ async def NameChange(ctx, *, rio_url):
 @bot.command()
 @commands.has_any_role('Moderator', 'NOVA')
 async def filterOldBoosterRole(ctx):
-    client_role = get(ctx.guild.roles, name="Client")
-    clientNA_role = get(ctx.guild.roles, name="Client NA")
-    pickyourregion_role = get(ctx.guild.roles, name="PickYourRegion")
-    nova_role = get(ctx.guild.roles, name="NOVA")
-    moderator_role = get(ctx.guild.roles, name="Moderator")
-    management_role = get(ctx.guild.roles, name="Management")
-    staff_role = get(ctx.guild.roles, name="Staff")
-    managementNA_role = get(ctx.guild.roles, name="Management NA")
-    staffNA_role = get(ctx.guild.roles, name="Staff NA")
-    bot_role = get(ctx.guild.roles, name="Bots")
-    partners_role = get(ctx.guild.roles, name="Partners")
-    buggy_member_ids =[579155972115660803, 131533528616665089, 753029074531909694]
-    booster_roles = [815104630433775617,815104630458417182,815104630517268534,815104630517268533]
-    old_boosterA = get(ctx.guild.roles, name="815104630517268532")
-    old_boosterH = get(ctx.guild.roles, name="815104630517268531")
-    async for member in ctx.guild.fetch_members():
-        booster_roles_check =  any(item in member.roles for item in booster_roles)
-        if (not member.bot and member.nick is not None and pickyourregion_role not in member.roles and 
-            client_role not in member.roles and clientNA_role not in member.roles and 
-            management_role not in member.roles and staff_role not in member.roles and 
-            managementNA_role not in member.roles and staffNA_role not in member.roles and 
-            nova_role not in member.roles and moderator_role not in member.roles and 
-            bot_role not in member.roles and partners_role not in member.roles and 
-            member.id not in buggy_member_ids):
-            if booster_roles_check and (old_boosterA in member.roles):
-                await member.remove_roles(old_boosterA)
-                await ctx.send(f"{member.display_name} has normal booster ranks, removed old booster")
-            elif booster_roles_check and (old_boosterH in member.roles):
-                await member.remove_roles(old_boosterH)
-                await ctx.send(f"{member.display_name} has normal booster ranks, removed old booster")
-    await ctx.message.delete()
-    await ctx.send("Roles filtered")
+    try:
+        client_role = get(ctx.guild.roles, name="Client")
+        clientNA_role = get(ctx.guild.roles, name="Client NA")
+        pickyourregion_role = get(ctx.guild.roles, name="PickYourRegion")
+        nova_role = get(ctx.guild.roles, name="NOVA")
+        moderator_role = get(ctx.guild.roles, name="Moderator")
+        management_role = get(ctx.guild.roles, name="Management")
+        staff_role = get(ctx.guild.roles, name="Staff")
+        managementNA_role = get(ctx.guild.roles, name="Management NA")
+        staffNA_role = get(ctx.guild.roles, name="Staff NA")
+        bot_role = get(ctx.guild.roles, name="Bots")
+        partners_role = get(ctx.guild.roles, name="Partners")
+        buggy_member_ids =[579155972115660803, 131533528616665089, 753029074531909694]
+        booster_roles = [815104630433775617,815104630458417182,815104630517268534,815104630517268533]
+        old_boosterA = get(ctx.guild.roles, name="815104630517268532")
+        old_boosterH = get(ctx.guild.roles, name="815104630517268531")
+        async for member in ctx.guild.fetch_members():
+            booster_roles_check =  any(item in member.roles for item in booster_roles)
+            if (not member.bot and member.nick is not None and pickyourregion_role not in member.roles and 
+                client_role not in member.roles and clientNA_role not in member.roles and 
+                management_role not in member.roles and staff_role not in member.roles and 
+                managementNA_role not in member.roles and staffNA_role not in member.roles and 
+                nova_role not in member.roles and moderator_role not in member.roles and 
+                bot_role not in member.roles and partners_role not in member.roles and 
+                member.id not in buggy_member_ids):
+                if booster_roles_check and (old_boosterA in member.roles):
+                    await member.remove_roles(old_boosterA)
+                    await ctx.send(f"{member.display_name} has normal booster ranks, removed old booster")
+                elif booster_roles_check and (old_boosterH in member.roles):
+                    await member.remove_roles(old_boosterH)
+                    await ctx.send(f"{member.display_name} has normal booster ranks, removed old booster")
+        await ctx.message.delete()
+        await ctx.send("Roles filtered")
+    except Exception:
+        logger.error("--On filterOldBoosterRole Command---")
+        logger.error(traceback.format_exc())
+        logger.error("--On filterOldBoosterRole Command---")
+        bot_log_channel = get(ctx.guild.text_channels, name='bot-logs')
+        embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on filterOldBoosterRole", color=0x5d4991)
+        embed_bot_log.set_footer(text=
+                                "Timestamp (UTC±00:00): "
+                                f"{datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)}")
+        await bot_log_channel.send(embed=embed_bot_log)
 
 
 @bot.command()
