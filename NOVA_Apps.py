@@ -1234,6 +1234,9 @@ async def ListWrongRoles(ctx):
         MBoosterANA = get(ctx.guild.roles, name="M+ Booster [A] NA")
         MBoosterHNA = get(ctx.guild.roles, name="M+ Booster [H] NA")
         RaiderHNA = get(ctx.guild.roles, name="Raider [H] NA")
+        GuildRepA = get(ctx.guild.roles, name="Guild Representative {A}")
+        GuildRepH = get(ctx.guild.roles, name="Guild Representative {H}")
+        GuildRepHNA = get(ctx.guild.roles, name="Guild Representative [H] NA")
 
         buggy_member_ids =[579155972115660803, 131533528616665089, 753029074531909694]
         booster_roles = [HighKeyBoosterA,MBoosterA,HighKeyBoosterH,MBoosterH,PVP,RBG,RBGLeader,Mounts,LegacyA,LegacyH,TorghastA,TorghastH]
@@ -1258,6 +1261,7 @@ async def ListWrongRoles(ctx):
                 Curve not in member.roles and CurveTrial not in member.roles and
                 AdvertiserHNA not in member.roles and TrialAdvHNA not in member.roles and
                 MBoosterANA not in member.roles and MBoosterHNA not in member.roles and RaiderHNA not in member.roles and
+                GuildRepA not in member.roles and GuildRepH not in member.roles and GuildRepHNA not in member.roles and
                 member.id not in buggy_member_ids):
                 await ctx.send(f"{member.display_name} with id {member.id} has wrong roles.")
                 return
