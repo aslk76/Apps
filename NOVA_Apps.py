@@ -1189,6 +1189,65 @@ async def filterOldBoosterRole(ctx):
                                 f"{datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)}")
         await bot_log_channel.send(embed=embed_bot_log)
 
+@bot.command()
+@commands.has_any_role('Moderator', 'NOVA', 'developer')
+async def ListWrongRoles(ctx):
+    try:
+        client_role = get(ctx.guild.roles, name="Client")
+        clientNA_role = get(ctx.guild.roles, name="Client NA")
+        pickyourregion_role = get(ctx.guild.roles, name="PickYourRegion")
+        nova_role = get(ctx.guild.roles, name="NOVA")
+        moderator_role = get(ctx.guild.roles, name="Moderator")
+        management_role = get(ctx.guild.roles, name="Management")
+        staff_role = get(ctx.guild.roles, name="Staff")
+        managementNA_role = get(ctx.guild.roles, name="Management NA")
+        staffNA_role = get(ctx.guild.roles, name="Staff NA")
+        bot_role = get(ctx.guild.roles, name="Bots")
+        partners_role = get(ctx.guild.roles, name="Partners")
+
+        HighKeyBoosterA = get(ctx.guild.roles, name='High Key Booster [A]')
+        MBoosterA = get(ctx.guild.roles, name='M+ Booster [A]')
+        HighKeyBoosterH = get(ctx.guild.roles, name='High Key Booster [H]')
+        MBoosterH = get(ctx.guild.roles, name='M+ Booster [H]')
+        PVP = get(ctx.guild.roles, name = "PVP")
+        RBG = get(ctx.guild.roles, name = "RBG")
+        RBGLeader = get(ctx.guild.roles, name = "RBG Leader")
+        Mounts = get(ctx.guild.roles, name = "Mounts")
+        LegacyA = get(ctx.guild.roles, name = "Legacy Alliance [A]")
+        LegacyH = get(ctx.guild.roles, name="Legacy Horde [H]")
+        TorghastA = get(ctx.guild.roles, name="Torghast Booster [A]")
+        TorghastH = get(ctx.guild.roles, name="Torghast Booster [H]")
+        
+        buggy_member_ids =[579155972115660803, 131533528616665089, 753029074531909694]
+        booster_roles = [HighKeyBoosterA,MBoosterA,HighKeyBoosterH,MBoosterH,PVP,RBG,RBGLeader,Mounts,LegacyA,LegacyH,TorghastA,TorghastH]
+        async for member in ctx.guild.fetch_members():
+            # booster_roles_check =  any(item in member.roles for item in booster_roles)
+            if (not member.bot and member.nick is not None and pickyourregion_role not in member.roles and 
+                client_role not in member.roles and clientNA_role not in member.roles and 
+                management_role not in member.roles and staff_role not in member.roles and 
+                managementNA_role not in member.roles and staffNA_role not in member.roles and 
+                nova_role not in member.roles and moderator_role not in member.roles and 
+                bot_role not in member.roles and partners_role not in member.roles and
+                HighKeyBoosterA not in member.roles and HighKeyBoosterH not in member.roles and
+                MBoosterA not in member.roles and MBoosterH not in member.roles and
+                PVP not in member.roles and RBG not in member.roles and RBGLeader not in member.roles and
+                Mounts not in member.roles and LegacyA not in member.roles and LegacyH not in member.roles and
+                TorghastA not in member.roles and TorghastH not in member.roles and
+                member.id not in buggy_member_ids):
+                await ctx.send(f"{member.display_name} with id {member.id} has wrong roles.")
+                return
+        await ctx.message.delete()
+        await ctx.send("Roles filtered")
+    except Exception:
+        logger.error("--On ListWrongRoles Command---")
+        logger.error(traceback.format_exc())
+        logger.error("--On ListWrongRoles Command---")
+        bot_log_channel = get(ctx.guild.text_channels, name='bot-logs')
+        embed_bot_log = discord.Embed(title="NOVA Apps Error Log.", description="on ListWrongRoles", color=0x5d4991)
+        embed_bot_log.set_footer(text=
+                                "Timestamp (UTC±00:00): "
+                                f"{datetime.now(timezone.utc).replace(microsecond=0, tzinfo=None)}")
+        await bot_log_channel.send(embed=embed_bot_log)
 
 @bot.command()
 @commands.has_any_role('Moderator', 'NOVA', 'Curve Section Leader')
