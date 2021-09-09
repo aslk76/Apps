@@ -1264,9 +1264,8 @@ async def ListWrongRoles(ctx):
                 GuildRepA not in member.roles and GuildRepH not in member.roles and GuildRepHNA not in member.roles and
                 member.id not in buggy_member_ids):
                 await ctx.send(f"{member.display_name} with id {member.id} has wrong roles.")
-                return
         await ctx.message.delete()
-        await ctx.send("Roles filtered")
+        await ctx.send("Checked all users")
     except Exception:
         logger.error("--On ListWrongRoles Command---")
         logger.error(traceback.format_exc())
