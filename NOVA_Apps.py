@@ -1217,7 +1217,14 @@ async def ListWrongRoles(ctx):
         LegacyH = get(ctx.guild.roles, name="Legacy Horde [H]")
         TorghastA = get(ctx.guild.roles, name="Torghast Booster [A]")
         TorghastH = get(ctx.guild.roles, name="Torghast Booster [H]")
-        
+        OldBoosterA = get(ctx.guild.roles, name="Old Booster [A]")
+        OldBoosterH = get(ctx.guild.roles, name="Old Booster [H]")
+        TrialAdvA = get(ctx.guild.roles, name="Trial Advertiser {A}")
+        TrialAdvH = get(ctx.guild.roles, name="Trial Advertiser {H}")
+        AdvA = get(ctx.guild.roles, name="Advertiser {A}")
+        AdvH = get(ctx.guild.roles, name="Advertiser {H}")
+        HotshotA = get(ctx.guild.roles, name="Hotshot Advertiser [A]")
+        HotshotH = get(ctx.guild.roles, name="Hotshot Advertiser [A]")
         buggy_member_ids =[579155972115660803, 131533528616665089, 753029074531909694]
         booster_roles = [HighKeyBoosterA,MBoosterA,HighKeyBoosterH,MBoosterH,PVP,RBG,RBGLeader,Mounts,LegacyA,LegacyH,TorghastA,TorghastH]
         async for member in ctx.guild.fetch_members():
@@ -1233,6 +1240,10 @@ async def ListWrongRoles(ctx):
                 PVP not in member.roles and RBG not in member.roles and RBGLeader not in member.roles and
                 Mounts not in member.roles and LegacyA not in member.roles and LegacyH not in member.roles and
                 TorghastA not in member.roles and TorghastH not in member.roles and
+                OldBoosterA not in member.roles and OldBoosterH not in member.roles and
+                TrialAdvA not in member.roles and TrialAdvH not in member.roles and
+                AdvA not in member.roles and AdvH not in member.roles and
+                HotshotA not in member.roles and HotshotH not in member.roles and
                 member.id not in buggy_member_ids):
                 await ctx.send(f"{member.display_name} with id {member.id} has wrong roles.")
                 return
