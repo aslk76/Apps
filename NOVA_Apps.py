@@ -140,8 +140,9 @@ async def on_raw_reaction_add(payload):
             heal_score = embed_fields[4]["value"]
             dps_score = embed_fields[5]["value"]
             overall_score = embed_fields[6]["value"]
-            
+
             realm_pre = char_realm.replace(' ', '').replace('-','').replace('```','').capitalize()
+            realm_pre = re.sub('[^A-Za-z0-9\']+', '', realm_pre)
             if realm_pre.startswith("Pozzo"):
                 realm_final = "Pozzo"
             elif realm_pre == "Dunmodr":
