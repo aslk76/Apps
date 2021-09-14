@@ -121,7 +121,7 @@ async def on_raw_reaction_add(payload):
     hundred_emoji = [reaction for reaction in message.reactions if reaction.emoji == u"\U0001F4AF"]
     rio_channel = get(guild.text_channels, name='raiderio-channel')
     rio_allowed_ids=[241687840151437313,227102790349094923,278172998496944128,768024256822902815,226069789754392576,
-                163324686086832129,234065317037342721,200277087238619137]
+                163324686086832129,234065317037342721,200277087238619137,186433880872583169]
     try:
         if not user.bot and payload.user_id not in rio_allowed_ids and \
             (payload.channel_id == 815104634698858581 or payload.channel_id == 815104632208490570):
