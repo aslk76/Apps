@@ -548,6 +548,7 @@ async def on_message(message):
                                 "If you think this is an error, please, contact Staff.\n"
                                 "\nThank you,"
                                 "\n***NOVA Team***")
+                    await message.delete()
             elif (len(auto_rank_msg)<2 or len(auto_rank_msg)>2) and not message.author.bot and \
                     message.author.id not in rio_allowed_ids:
                     await message.delete()
