@@ -478,7 +478,7 @@ async def on_message(message):
             MBoosterH = get(message.guild.roles, name='M+ Booster [H]')
             applicant = message.author
             if len(auto_rank_msg)==2 and not message.author.bot:
-                if MBoosterA not in applicant.roles or MBoosterH not in applicant.roles:
+                if MBoosterA not in applicant.roles and MBoosterH not in applicant.roles:
                     if auto_rank_msg[1].lower().startswith('character realm') and not message.author.bot and \
                         message.author.id not in rio_allowed_ids and "https" not in message.content:
                         auto_rank_char_name = auto_rank_msg[0].partition(":")[2].strip()
