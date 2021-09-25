@@ -541,13 +541,13 @@ async def on_message(message):
                         "https" in message.content:
                         await message.delete()
                         await message.channel.send(f"You used wrong template, check the pinned messages {message.author.mention}", delete_after=10)
-                    else:
-                        await applicant.create_dm()
-                        await applicant.dm_channel.send(
-                            f"Hello **{applicant.name}**\n\nYou are already a booster of Mythic Plus for ***NOVA***."
-                                    "If you think this is an error, please, contact Staff.\n"
-                                    "\nThank you,"
-                                    "\n***NOVA Team***")
+                else:
+                    await applicant.create_dm()
+                    await applicant.dm_channel.send(
+                        f"Hello **{applicant.name}**\n\nYou are already a booster of Mythic Plus for ***NOVA***."
+                                "If you think this is an error, please, contact Staff.\n"
+                                "\nThank you,"
+                                "\n***NOVA Team***")
             elif (len(auto_rank_msg)<2 or len(auto_rank_msg)>2) and not message.author.bot and \
                     message.author.id not in rio_allowed_ids:
                     await message.delete()
