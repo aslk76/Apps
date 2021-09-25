@@ -474,70 +474,80 @@ async def on_message(message):
             rio_allowed_ids=[241687840151437313,227102790349094923,278172998496944128,768024256822902815,226069789754392576,
                                 163324686086832129,234065317037342721,200277087238619137]
             auto_rank_msg = message.content.split("\n")
+            MBoosterA = get(message.guild.roles, name='M+ Booster [A]')
+            MBoosterH = get(message.guild.roles, name='M+ Booster [H]')
+            applicant = message.author
             if len(auto_rank_msg)==2 and not message.author.bot:
-                if auto_rank_msg[1].lower().startswith('character realm') and not message.author.bot and \
-                    message.author.id not in rio_allowed_ids and "https" not in message.content:
-                    auto_rank_char_name = auto_rank_msg[0].partition(":")[2].strip()
-                    auto_rank_realm_name = auto_rank_msg[1].partition(":")[2].strip()
-                    response = requests.get(
-                                "https://raider.io/api/v1/characters/profile?region=eu&realm=" + auto_rank_realm_name + 
-                                "&name=" + auto_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
-                    if response.status_code == 200:
-                        applicant = message.author
-                        await message.delete()
-                        json_str = json.dumps(response.json())
-                        resp = json.loads(json_str)
-                        char_class = resp['class']
-                        char_faction = resp['faction']
-                        season = resp['mythic_plus_scores_by_season']
-                        season_curr = season[0]
-                        season_curr_all = season_curr['scores']['all']
-                        season_curr_tank = season_curr['scores']['tank']
-                        season_curr_heal = season_curr['scores']['healer']
-                        season_curr_dps = season_curr['scores']['dps']
-                        if season_curr_tank >= rio_conf.role_threshhold or season_curr_heal >= rio_conf.role_threshhold or season_curr_dps >= rio_conf.role_threshhold:
-                            auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})")
-                            auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
-                            auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
-                            auto_rank_embed.add_field(name="Faction", value=char_faction.capitalize(), inline=True)
-                            auto_rank_embed.add_field(name="Class", value=char_class.title(), inline=True)
-                            auto_rank_embed.add_field(name="DiscordID", value=applicant, inline=False)
-                            auto_rank_embed.add_field(name="Tank", value=season_curr['scores']['tank'], inline=True)
-                            auto_rank_embed.add_field(name="Heal", value=season_curr['scores']['healer'], inline=True)
-                            auto_rank_embed.add_field(name="DPS", value=season_curr['scores']['dps'], inline=True)
-                            auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
-                            mplus_applications_review_channel = get(message.guild.text_channels, id=815104634698858581)
-                            auto_rank_embed_sent = await mplus_applications_review_channel.send(embed = auto_rank_embed)
-                            await applicant.create_dm()
-                            await applicant.dm_channel.send(
+                if MBoosterA not in applicant.roles or MBoosterH not in applicant.roles:
+                    if auto_rank_msg[1].lower().startswith('character realm') and not message.author.bot and \
+                        message.author.id not in rio_allowed_ids and "https" not in message.content:
+                        auto_rank_char_name = auto_rank_msg[0].partition(":")[2].strip()
+                        auto_rank_realm_name = auto_rank_msg[1].partition(":")[2].strip()
+                        response = requests.get(
+                                    "https://raider.io/api/v1/characters/profile?region=eu&realm=" + auto_rank_realm_name + 
+                                    "&name=" + auto_rank_char_name + "&fields=mythic_plus_scores_by_season%3Acurrent")
+                        if response.status_code == 200:
+                            await message.delete()
+                            json_str = json.dumps(response.json())
+                            resp = json.loads(json_str)
+                            char_class = resp['class']
+                            char_faction = resp['faction']
+                            season = resp['mythic_plus_scores_by_season']
+                            season_curr = season[0]
+                            season_curr_all = season_curr['scores']['all']
+                            season_curr_tank = season_curr['scores']['tank']
+                            season_curr_heal = season_curr['scores']['healer']
+                            season_curr_dps = season_curr['scores']['dps']
+                            if season_curr_tank >= rio_conf.role_threshhold or season_curr_heal >= rio_conf.role_threshhold or season_curr_dps >= rio_conf.role_threshhold:
+                                auto_rank_embed = discord.Embed(title="Application of:", description=f"{applicant.mention} / [{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})")
+                                auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
+                                auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
+                                auto_rank_embed.add_field(name="Faction", value=char_faction.capitalize(), inline=True)
+                                auto_rank_embed.add_field(name="Class", value=char_class.title(), inline=True)
+                                auto_rank_embed.add_field(name="DiscordID", value=applicant, inline=False)
+                                auto_rank_embed.add_field(name="Tank", value=season_curr['scores']['tank'], inline=True)
+                                auto_rank_embed.add_field(name="Heal", value=season_curr['scores']['healer'], inline=True)
+                                auto_rank_embed.add_field(name="DPS", value=season_curr['scores']['dps'], inline=True)
+                                auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
+                                mplus_applications_review_channel = get(message.guild.text_channels, id=815104634698858581)
+                                auto_rank_embed_sent = await mplus_applications_review_channel.send(embed = auto_rank_embed)
+                                await applicant.create_dm()
+                                await applicant.dm_channel.send(
+                                    f"Hello **{applicant.name}**\n\nThank you for submitting an application to become a booster for ***NOVA***, "
+                                    "all the applications will be verified by our team every day, you don't have to DM us to speed up the process, your DMs will be ignored..\n"
+                                    "\nThank you,"
+                                    "\n***NOVA Team***")
+                                await auto_rank_embed_sent.add_reaction('<:nova_c:817558639241592859>')
+                                await auto_rank_embed_sent.add_reaction('<:nova_x:817559679760465980>')
+                            else:
+                                auto_rank_embed = discord.Embed(title="Application of:", description=f"[{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})", color = discord.Color.red())
+                                auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
+                                auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
+                                auto_rank_embed.add_field(name="Tank", value=season_curr['scores']['tank'], inline=True)
+                                auto_rank_embed.add_field(name="Heal", value=season_curr['scores']['healer'], inline=True)
+                                auto_rank_embed.add_field(name="DPS", value=season_curr['scores']['dps'], inline=True)
+                                auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
+                                auto_rank_embed.add_field(name="Application declined", value="you have less than the required rio in a specific role", inline=False)
+                                await applicant.send(
                                 f"Hello **{applicant.name}**\n\nThank you for submitting an application to become a booster for ***NOVA***, "
-                                "all the applications will be verified by our team every day, you don't have to DM us to speed up the process, your DMs will be ignored..\n"
+                                "however on this occasion we regret to inform you that your application has been declined.\n"
                                 "\nThank you,"
                                 "\n***NOVA Team***")
-                            await auto_rank_embed_sent.add_reaction('<:nova_c:817558639241592859>')
-                            await auto_rank_embed_sent.add_reaction('<:nova_x:817559679760465980>')
+                                auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed, delete_after=10)
+                                await auto_rank_embed_sent.add_reaction(u"\u274C")
                         else:
-                            auto_rank_embed = discord.Embed(title="Application of:", description=f"[{auto_rank_char_name}-{auto_rank_realm_name}]({resp['profile_url']})", color = discord.Color.red())
-                            auto_rank_embed.set_thumbnail(url=resp['thumbnail_url'])
-                            auto_rank_embed.set_footer(text="Timestamp (UTC±00:00): " + datetime.utcnow().strftime("%d/%m/%Y %H:%M:%S"), icon_url="https://cdn.discordapp.com/avatars/634917649335320586/ea303e8b580d56ff6837e256b1df6ef6.png")
-                            auto_rank_embed.add_field(name="Tank", value=season_curr['scores']['tank'], inline=True)
-                            auto_rank_embed.add_field(name="Heal", value=season_curr['scores']['healer'], inline=True)
-                            auto_rank_embed.add_field(name="DPS", value=season_curr['scores']['dps'], inline=True)
-                            auto_rank_embed.add_field(name="Overall", value=season_curr_all, inline=False)
-                            auto_rank_embed.add_field(name="Application declined", value="you have less than the required rio in a specific role", inline=False)
-                            await applicant.send(
-                            f"Hello **{applicant.name}**\n\nThank you for submitting an application to become a booster for ***NOVA***, "
-                            "however on this occasion we regret to inform you that your application has been declined.\n"
-                            "\nThank you,"
-                            "\n***NOVA Team***")
-                            auto_rank_embed_sent=await message.channel.send(embed = auto_rank_embed, delete_after=10)
-                            await auto_rank_embed_sent.add_reaction(u"\u274C")
+                            await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_realm_name +") found on Raider.io, double check spelling", delete_after=10)
+                    elif not auto_rank_msg[1].lower().startswith('character realm') or not auto_rank_msg[0].lower().startswith('character name') or \
+                        "https" in message.content:
+                        await message.delete()
+                        await message.channel.send(f"You used wrong template, check the pinned messages {message.author.mention}", delete_after=10)
                     else:
-                        await message.channel.send("No such character ("+ auto_rank_char_name + "-" + auto_rank_realm_name +") found on Raider.io, double check spelling", delete_after=10)
-                elif not auto_rank_msg[1].lower().startswith('character realm') or not auto_rank_msg[0].lower().startswith('character name') or \
-                    "https" in message.content:
-                    await message.delete()
-                    await message.channel.send(f"You used wrong template, check the pinned messages {message.author.mention}", delete_after=10)
+                        await applicant.create_dm()
+                        await applicant.dm_channel.send(
+                            f"Hello **{applicant.name}**\n\nYou are already a booster of Mythic Plus for ***NOVA***."
+                                    "If you think this is an error, please, contact Staff.\n"
+                                    "\nThank you,"
+                                    "\n***NOVA Team***")
             elif (len(auto_rank_msg)<2 or len(auto_rank_msg)>2) and not message.author.bot and \
                     message.author.id not in rio_allowed_ids:
                     await message.delete()
