@@ -1616,6 +1616,21 @@ async def MountsPanels(ctx):
     embed.add_field(name="Note:", value="This takes 7 days to obtain. ~20 min per day", inline=True)
     await ctx.send(embed=embed)
 
+@bot.command()
+@commands.has_any_role('developer', 'Moderator', 'NOVA')
+async def testMounts(ctx):
+    """This is a test for Mounts ofc
+    """
+    await ctx.message.delete()
+
+    guild = bot.get_guild(841819279484911646)
+    invite = await guild.channels[0].create_invite(max_uses = 1)
+    channel = await guild.create_text_channel('test_channel')
+    role = guild.default_role
+    await channel.set_permissions(role, read_messages=False, send_messages=False)
+    await channel.set_permissions(ctx.author, read_messages=True, send_messages=True)
+    await ctx.send(f"A test invite: {invite}")
+    #guild 841819279484911646
 
 async def start_bot():
     pool = await aiomysql.create_pool(host=DB_HOST, port=3306,
