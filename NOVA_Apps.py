@@ -1193,9 +1193,12 @@ async def NameChange(ctx, *, rio_url):
                                         INSERT INTO name_changes 
                                             (discord_id, old_name, new_name, date_of_change) 
                                             VALUES (%s, %s, %s, %s)
+                                        ON DUPLICATE KEY UPDATE 
+                                            `old_name`=%s, `new_name`=%s, `date_of_change`=%s
                                     """
                                 val = (
                                     ctx.author.id, ctx.author.display_name, f"{rio_name}-{realm_final} [{faction_short}]", 
+                                    {datetime.now(timezone.utc).date()},ctx.author.display_name, f"{rio_name}-{realm_final} [{faction_short}]", 
                                     {datetime.now(timezone.utc).date()})
                                 await cursor.execute(query, val)
                             await ctx.author.edit(nick=f"{rio_name}-{realm_final} [{faction_short}]")
