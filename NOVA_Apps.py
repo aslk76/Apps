@@ -1067,8 +1067,16 @@ async def NameChange(ctx, *, rio_url):
     raiderio_regex = re.compile(rio_conf.RAIDERIO_LINK)
     match = raiderio_regex.findall(rio_url)
     command_issuer = ctx.author
-    
-
+    Moderator_role = get(ctx.guild.roles, name="Moderator")
+    Management_role = get(ctx.guild.roles, name="Management")
+    Staff_role = get(ctx.guild.roles, name="staff active")
+    CS_role = get(ctx.guild.roles, name="Community Support")
+    balance_check_channel = get(ctx.guild.text_channels, id=815104636251275312)
+    if (ctx.message.channel.id != 815104636251275312 and 
+        (Moderator_role not in ctx.author.roles and Management_role not in ctx.author.roles and Staff_role not in ctx.author.roles and CS_role not in ctx.author.roles)):
+        return await ctx.message.channel.send(
+            f"Head to {balance_check_channel.mention} to issue the command", 
+            delete_after=5)
     if not match:
         await ctx.author.send("""
                             Wrong Raider.IO link, please double check it, 
@@ -1130,6 +1138,7 @@ async def NameChange(ctx, *, rio_url):
                     )
                     response = requests.get(rio_api)
                     if response.status_code == 200:
+                        msg.delete()
                         json_str = json.dumps(response.json())
                         resp = json.loads(json_str)
                         faction = resp["faction"]
@@ -1202,6 +1211,7 @@ async def NameChange(ctx, *, rio_url):
                                     {datetime.now(timezone.utc).date()})
                                 await cursor.execute(query, val)
                             await ctx.author.edit(nick=f"{rio_name}-{realm_final} [{faction_short}]")
+                            await ctx.message.delete()
             elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
                 await ctx.send(
                     f"You have changed your name in the last 60 days, you cannot change "
