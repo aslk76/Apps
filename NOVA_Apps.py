@@ -1131,6 +1131,7 @@ async def NameChange(ctx, *, rio_url):
                     await confirmation_msg.delete()
                 else:
                     await confirmation_msg.delete()
+                    await ctx.send(msg)
                     rio_api = (
                         f"{rio_conf.base}/api/v1/characters/profile?region=eu"
                         f"&realm={realm}"
@@ -1138,7 +1139,6 @@ async def NameChange(ctx, *, rio_url):
                     )
                     response = requests.get(rio_api)
                     if response.status_code == 200:
-                        msg.delete()
                         json_str = json.dumps(response.json())
                         resp = json.loads(json_str)
                         faction = resp["faction"]
