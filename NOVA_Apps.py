@@ -1131,7 +1131,7 @@ async def NameChange(ctx, *, rio_url):
                     await confirmation_msg.delete()
                 else:
                     await confirmation_msg.delete()
-                    msg.delete()
+                    await msg.delete()
                     rio_api = (
                         f"{rio_conf.base}/api/v1/characters/profile?region=eu"
                         f"&realm={realm}"
