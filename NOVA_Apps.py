@@ -165,8 +165,10 @@ async def on_raw_reaction_add(payload):
                 realm_final = "ArgentDawn"
             elif realm_pre == "Burningblade":
                 realm_final = "BurningBlade"
+            elif realm_pre == "Aggramar":
+                realm_final = "Aggramar"
             elif realm_pre.startswith("Aggra"):
-                realm_final = "Aggra"
+                realm_final = "Aggra" 
             elif realm_pre.startswith("Chamberof"):
                 realm_final = "ChamberofAspects"
             elif realm_pre.startswith("Emerald"):
