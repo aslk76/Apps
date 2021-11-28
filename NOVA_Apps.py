@@ -1153,10 +1153,6 @@ async def NameChange(ctx, *, rio_url):
                         char_class = resp['class']
                         char_faction = resp['faction']
                         if tank_score >= rio_conf.role_threshhold or heal_score >= rio_conf.role_threshhold or dps_score >= rio_conf.role_threshhold:
-                            await ctx.send("The character your are renaming to has less than the required score",
-                                            delete_after = 10)
-                            return
-                        else:
                             faction_short = "H" if faction == "horde" else "A"
                             realm_pre = realm.replace(' ', '').replace('-','').capitalize()
                             if realm_pre.startswith("Pozzo"):
@@ -1277,6 +1273,10 @@ async def NameChange(ctx, *, rio_url):
                                 await cursor.execute(query, val)
                             await ctx.author.edit(nick=f"{rio_name}-{realm_final} [{faction_short}]")
                             await ctx.message.delete()
+                        else:
+                            await ctx.send("The character your are renaming to has less than the required score",
+                                            delete_after = 10)
+                            return
             elif end_date is not None and datetime.now(timezone.utc).date() < end_date:
                 await ctx.send(
                     f"You have changed your name in the last 60 days, you cannot change "
