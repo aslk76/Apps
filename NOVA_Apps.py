@@ -1141,12 +1141,18 @@ async def NameChange(ctx, *, rio_url):
                     )
                     response = requests.get(rio_api)
                     if response.status_code == 200:
+                        guild = bot.get_guild(ctx.guild_id)
+                        applicant = ctx.author
                         json_str = json.dumps(response.json())
                         resp = json.loads(json_str)
                         faction = resp["faction"]
                         rio_name = resp["name"]
-                        score = resp["mythic_plus_scores_by_season"][0]["scores"]["all"]
-                        if score < rio_conf.role_threshhold:
+                        dps_score = resp["mythic_plus_scores_by_season"][0]["scores"]["dps"]
+                        tank_score = resp["mythic_plus_scores_by_season"][0]["scores"]["tank"]
+                        heal_score = resp["mythic_plus_scores_by_season"][0]["scores"]["heal"]
+                        char_class = resp['class']
+                        char_faction = resp['faction']
+                        if tank_score >= rio_conf.role_threshhold or heal_score >= rio_conf.role_threshhold or dps_score >= rio_conf.role_threshhold:
                             await ctx.send("The character your are renaming to has less than the required score",
                                             delete_after = 10)
                             return
@@ -1197,8 +1203,65 @@ async def NameChange(ctx, *, rio_url):
                                 realm_final = "Zul'jin"
                             else:
                                 realm_final = realm_pre
-                            
-                            
+                            await applicant.edit(roles=[])
+                            if float(dps_score) >= rio_conf.role_threshhold:
+                                dps_role = "Damage"
+                                await applicant.add_roles(get(guild.roles, name=dps_role))
+                            else:
+                                dps_role = None
+                            if float(heal_score) >= rio_conf.role_threshhold:
+                                healer_role = "Heal"
+                                await applicant.add_roles(get(guild.roles, name=healer_role))
+                            else:
+                                healer_role = None
+                            if float(tank_score) >= rio_conf.role_threshhold:
+                                tank_role = "Tank"
+                                await applicant.add_roles(get(guild.roles, name=tank_role))
+                            else:
+                                tank_role = None
+                            if tank_role is not None or healer_role is not None or dps_role is not None:
+                                if char_class == "Demon Hunter" or char_class == "Druid" or char_class == "Monk" or \
+                                    char_class == "Rogue":
+                                    char_armor = "Leather"
+                                    roles_toadd = [get(guild.roles, name=char_armor), get(guild.roles, name=char_class),
+                                                get(guild.roles, name=char_faction.capitalize()),
+                                                get(guild.roles, name=f"M+ Booster [{char_faction[0].upper()}]"),
+                                                get(guild.roles, name=f"{char_class} Main"),
+                                                get(guild.roles, name="EU")]
+                                    await applicant.add_roles(*roles_toadd)
+                                elif char_class == "Mage" or char_class == "Priest" or char_class == "Warlock":
+                                    char_armor = "Cloth"
+                                    roles_toadd = [get(guild.roles, name=char_armor), get(guild.roles, name=char_class),
+                                                get(guild.roles, name=char_faction.capitalize()),
+                                                get(guild.roles, name=f"M+ Booster [{char_faction[0].upper()}]"),
+                                                get(guild.roles, name=f"{char_class} Main"),
+                                                get(guild.roles, name="EU")]
+                                    await applicant.add_roles(*roles_toadd)
+                                elif char_class == "Hunter" or char_class == "Shaman":
+                                    char_armor = "Mail"
+                                    roles_toadd = [get(guild.roles, name=char_armor), get(guild.roles, name=char_class),
+                                                get(guild.roles, name=char_faction.capitalize()),
+                                                get(guild.roles, name=f"M+ Booster [{char_faction[0].upper()}]"),
+                                                get(guild.roles, name=f"{char_class} Main"),
+                                                get(guild.roles, name="EU")]
+                                    await applicant.add_roles(*roles_toadd)
+                                elif char_class == "Paladin" or char_class == "Warrior" or char_class == "Death Knight":
+                                    char_armor = "Plate"
+                                    roles_toadd = [get(guild.roles, name=char_armor), get(guild.roles, name=char_class),
+                                                get(guild.roles, name=char_faction.capitalize()),
+                                                get(guild.roles, name=f"M+ Booster [{char_faction[0].upper()}]"),
+                                                get(guild.roles, name=f"{char_class} Main"),
+                                                get(guild.roles, name="EU")]
+                                    await applicant.add_roles(*roles_toadd)
+
+                                if (realm_final.lower().startswith("pozzo") or realm_final.lower()=="hyjal" or 
+                                    realm_final.lower()=="dalaran" or realm_final.lower().startswith("marécage") or 
+                                    realm_final.lower()=="exodar" or realm_final.lower()=="themaelstrom") and char_faction.lower() == "alliance":
+                                    await applicant.add_roles(get(guild.roles, name="A-Vaults"))
+                                elif (realm_final.lower().startswith("pozzo") or realm_final.lower()=="drak'thul" or realm_final.lower()=="burningblade" or
+                                        realm_final.lower()=="frostmane" or realm_final.lower()=="grimbatol" or realm_final.lower()=="aggra" or 
+                                        realm_final.lower()=="dalaran" or realm_final.lower().startswith("marécage")) and char_faction.lower() == "horde":
+                                    await applicant.add_roles(get(guild.roles, name="H-Vaults"))
                             async with conn.cursor() as cursor:
                                 query = """
                                         INSERT INTO name_changes 
