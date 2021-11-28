@@ -1141,7 +1141,7 @@ async def NameChange(ctx, *, rio_url):
                     )
                     response = requests.get(rio_api)
                     if response.status_code == 200:
-                        guild = bot.get_guild(ctx.guild_id)
+                        guild = bot.get_guild(815104630433775616)
                         applicant = ctx.author
                         json_str = json.dumps(response.json())
                         resp = json.loads(json_str)
