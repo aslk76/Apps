@@ -1149,7 +1149,7 @@ async def NameChange(ctx, *, rio_url):
                         rio_name = resp["name"]
                         dps_score = resp["mythic_plus_scores_by_season"][0]["scores"]["dps"]
                         tank_score = resp["mythic_plus_scores_by_season"][0]["scores"]["tank"]
-                        heal_score = resp["mythic_plus_scores_by_season"][0]["scores"]["heal"]
+                        heal_score = resp["mythic_plus_scores_by_season"][0]["scores"]["healer"]
                         char_class = resp['class']
                         char_faction = resp['faction']
                         if tank_score >= rio_conf.role_threshhold or heal_score >= rio_conf.role_threshhold or dps_score >= rio_conf.role_threshhold:
