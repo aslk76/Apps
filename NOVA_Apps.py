@@ -1205,7 +1205,23 @@ async def NameChange(ctx, *, rio_url):
                                 realm_final = "Zul'jin"
                             else:
                                 realm_final = realm_pre
-                            await applicant.edit(roles=[])
+                            if get(applicant.guild.roles, name="M+ Booster [A]") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="M+ Booster [A]"))
+                            if get(applicant.guild.roles, name="M+ Booster [H]") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="M+ Booster [H]"))
+                            if get(applicant.guild.roles, name="High Key Booster [A]") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="High Key Booster [A]"))
+                            if get(applicant.guild.roles, name="High Key Booster [H]") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="High Key Booster [H]"))
+                            if get(applicant.guild.roles, name="High Tier Booster [A]") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="High Tier Booster [A]"))
+                            if get(applicant.guild.roles, name="High Tier Booster [H]") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="High Tier Booster [H]"))
+                            if get(applicant.guild.roles, name="Alliance") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="Alliance"))
+                            if get(applicant.guild.roles, name="Horde") in applicant.roles:
+                                await applicant.remove_roles(get(applicant.guild.roles, name="Horde"))
+
                             if float(dps_score) >= rio_conf.role_threshhold:
                                 dps_role = "Damage"
                                 await applicant.add_roles(get(guild.roles, name=dps_role))
